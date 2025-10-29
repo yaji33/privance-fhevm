@@ -83,7 +83,7 @@ export default function WalletConnect() {
         <button
           onClick={connectWallet}
           disabled={isConnecting}
-          className="px-4 py-2 bg-[#98E29D] hover:bg-green-500 text-black font-medium rounded-lg transition-all shadow-sm hover:shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-[#98E29D] text-gray-900 px-5 py-2 rounded-md text-sm font-semibold hover:bg-green-300 transition shadow-sm hover:shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isConnecting ? "Connecting..." : "Connect Wallet"}
         </button>
