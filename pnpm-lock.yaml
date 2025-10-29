@@ -57,6 +57,9 @@ importers:
       daisyui:
         specifier: 5.0.9
         version: 5.0.9
+      ethers:
+        specifier: ^6.15.0
+        version: 6.15.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       idb:
         specifier: ^8.0.3
         version: 8.0.3
