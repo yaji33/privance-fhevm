@@ -22,7 +22,7 @@ export default function Dashboard() {
           <div className="absolute inset-x-0 bottom-0 h-3 bg-green-600/40 rounded filter blur-xl z-0"></div>
 
           {/* Gradient Badge */}
-          <div className="relative px-4 py-2 rounded-full bg-gradient-to-b from-green-600 via-[#1F3820] to-[#1F3820] shadow-[0_0_4px_#1F3820] z-10 mt-25">
+          <div className="relative px-4 py-2 rounded-full bg-gradient-to-b from-green-600 via-[#1F3820] to-[#1F3820] shadow-[0_0_4px_#1F3820] z-10 mt-20">
             <span className="text-white text-sm flex items-center gap-2 justify-center">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path
@@ -46,24 +46,25 @@ export default function Dashboard() {
           personal information.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
-          <a
-            href="/borrow"
-            className="bg-[#98E29D] text-gray-900 px-7 py-3 rounded-lg font-semibold hover:bg-green-300 transition"
-          >
-            Start Borrowing
-          </a>
-          <a
-            href="/lender"
-            className="border-2 border-green-400 text-white px-7 py-3 rounded-lg font-medium hover:bg-green-400 hover:text-gray-900 transition"
-          >
-            Become a Lender
-          </a>
-        </div>
+    <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
+  <a
+    href="/borrow"
+    className="bg-[#98E29D] text-gray-900 px-5 py-2 rounded-md text-sm font-semibold hover:bg-green-300 transition"
+  >
+    Start Borrowing
+  </a>
+  <a
+    href="/lender"
+    className="border border-green-400 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-green-400 hover:text-gray-900 transition"
+  >
+    Become a Lender
+  </a>
+</div>
+
       </div>
 
-      {/* Features — smaller and aligned at bottom */}
-      <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 px-8 md:px-20 pb-10 max-w-6xl mx-auto z-10">
+      {/* 🌿 Features Section — fits within viewport */}
+      <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 px-8 md:px-20 pb-6 max-w-6xl mx-auto z-10 mt-4">
         {[
           {
             id: "01",
@@ -83,7 +84,7 @@ export default function Dashboard() {
         ].map((card) => (
           <div
             key={card.id}
-            className="bg-black/20 backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-green-700 transition-colors"
+            className="bg-black/20 backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-green-800 transition-colors"
           >
             <div className="flex items-start justify-between mb-4">
               <span className="text-4xl md:text-5xl font-bold bg-gradient-to-b from-[#B7E350] to-[#22430C] text-transparent bg-clip-text">
@@ -94,6 +95,8 @@ export default function Dashboard() {
               {card.title}
             </h3>
             <p className="text-gray-300">{card.desc}</p>
+
+            <div className="h-1 w-full rounded-full bg-gradient-to-r from-[#B7E350] to-[#22430C]"></div>
           </div>
         ))}
       </div>
