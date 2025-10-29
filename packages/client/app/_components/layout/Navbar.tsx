@@ -24,7 +24,7 @@ export default function Navbar({ activePage, setActivePage }: NavbarProps) {
               key={link.name}
               onClick={() => setActivePage(link.page as any)}
               className={`relative transition-colors duration-200 pb-1 ${
-                activePage === link.page ? "text-green-400 border-b-2 border-green-400" : "hover:text-green-400"
+                activePage === link.page ? "text-white border-b-2 border-green-400" : "hover:text-green-400"
               }`}
             >
               {link.name}
