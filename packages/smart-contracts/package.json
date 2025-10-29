@@ -1,0 +1,35 @@
+{
+  "name": "smart-contracts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.ts",
+    "deploy:zama": "hardhat run scripts/deploy.ts --network zamaDevnet",
+    "deploy:local": "hardhat run scripts/deploy.ts --network localfhevm"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.19.0",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.8",
+    "@nomicfoundation/hardhat-ethers": "^3.0.8",
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/chai": "^4.3.20",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.18.12",
+    "chai": "^4.5.0",
+    "ethers": "^6.15.0",
+    "hardhat": "^2.26.3",
+    "mocha": "^11.7.4",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.8.3"
+  },
+  "dependencies": {
+    "@fhevm/solidity": "^0.8.0",
+    "dotenv": "^17.2.3"
+  }
+}
