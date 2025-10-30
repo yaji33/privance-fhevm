@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
-import { createLenderOffer, encryptData, getContract } from "../lib/contract1";
+import React, { useEffect, useMemo, useState } from "react";
+import { createLenderOffer, encryptData, getContract, getLenderOffers } from "../lib/contract1";
 import { useFhevm } from "@fhevm-sdk";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
@@ -11,6 +11,7 @@ interface OfferForm {
   maxLoanAmount: string;
   interestRate: string;
   fundingAmount: string;
+  collateralPercentage: string;
 }
 
 export default function LenderDashboard() {
@@ -19,6 +20,7 @@ export default function LenderDashboard() {
     maxLoanAmount: "",
     interestRate: "",
     fundingAmount: "",
+    collateralPercentage: "100",
   });
   const [loading, setLoading] = useState(false);
   const [offers, setOffers] = useState<any[]>([]);
@@ -60,23 +62,28 @@ export default function LenderDashboard() {
     }
 
     const minScore = BigInt(form.minCreditScore);
-    const maxAmount = BigInt(form.maxLoanAmount);
+    const maxAmountInWei = ethers.parseEther(form.maxLoanAmount);
     const interestRate = BigInt(form.interestRate);
     const fundingAmount = form.fundingAmount;
-
+    const collateralPercentage = BigInt(form.collateralPercentage);
     // Validation
     if (minScore < 300n || minScore > 850n) {
       alert("Minimum credit score must be between 300 and 850");
       return;
     }
 
-    if (maxAmount <= 0n) {
-      alert("Maximum loan amount must be greater than 0");
+    if (maxAmountInWei < ethers.parseEther("0.001")) {
+      alert("Maximum loan amount must be at least 0.001 ETH");
       return;
     }
 
     if (interestRate <= 0n || interestRate > 10000n) {
       alert("Interest rate must be between 1 and 10000 basis points (0.01% to 100%)");
+      return;
+    }
+
+    if (collateralPercentage < 0n || collateralPercentage > 10000n) {
+      alert("Collateral percentage must be between 0 and 10000 (0% to 100%)");
       return;
     }
 
@@ -90,13 +97,22 @@ export default function LenderDashboard() {
     try {
       console.log("Creating lender offer with parameters:", {
         minScore: minScore.toString(),
-        maxAmount: maxAmount.toString(),
+        maxAmount: maxAmountInWei.toString(),
         interestRate: interestRate.toString(),
         fundingAmount: form.fundingAmount,
+        collateralPercentage: collateralPercentage.toString(),
       });
 
       // Use the helper function from your contract interaction file
-      const tx = await createLenderOffer(fhevmInstance, minScore, maxAmount, interestRate, form.fundingAmount, address);
+      const tx = await createLenderOffer(
+        fhevmInstance,
+        minScore,
+        maxAmountInWei,
+        interestRate,
+        form.fundingAmount,
+        address,
+        Number(collateralPercentage),
+      );
 
       console.log("Transaction sent:", tx.hash);
       const receipt = await tx.wait();
@@ -114,6 +130,7 @@ export default function LenderDashboard() {
         maxLoanAmount: "",
         interestRate: "",
         fundingAmount: "",
+        collateralPercentage: "100",
       });
 
       // Refresh offers list
@@ -152,14 +169,16 @@ export default function LenderDashboard() {
     if (!address) return;
 
     try {
-      const contract = await getContract();
-      // In production, implement proper event listening or indexing
-      // For MVP, simplified approach
-      console.log("Loading offers...");
+      const lenderOffers = await getLenderOffers(address);
+      setOffers(lenderOffers);
     } catch (err) {
       console.error("Error loading offers:", err);
     }
   };
+
+  useEffect(() => {
+    if (address) loadOffers();
+  }, [address]);
 
   return (
     <div className="space-y-6">
@@ -211,21 +230,25 @@ export default function LenderDashboard() {
           </div>
 
           {/* Maximum Loan Amount */}
+          {/* Maximum Loan Amount - FIX THIS SECTION */}
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">Maximum Loan Amount</label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">$</span>
+              {/* CHANGE THIS LINE: $ → Ξ */}
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">Ξ</span>
               <input
                 type="number"
-                placeholder="10000"
-                min="1"
+                placeholder="0.1"
+                min="0.001"
+                step="0.001"
                 value={form.maxLoanAmount}
                 onChange={e => setForm({ ...form, maxLoanAmount: e.target.value })}
                 className="w-full pl-8 pr-4 py-3 bg-slate-900/70 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
                 required
               />
             </div>
-            <p className="mt-1 text-xs text-slate-500">Maximum amount you're willing to lend per borrower</p>
+            {/* UPDATE HELPER TEXT */}
+            <p className="mt-1 text-xs text-slate-500">Maximum ETH amount you're willing to lend per borrower</p>
           </div>
 
           {/* Interest Rate */}
@@ -259,6 +282,26 @@ export default function LenderDashboard() {
               required
             />
             <p className="mt-1 text-xs text-slate-500">Amount of ETH to deposit for lending</p>
+          </div>
+          {/* Collateral Percentage */}
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Collateral Requirement (%)</label>
+            <div className="relative">
+              <input
+                type="number"
+                placeholder="100"
+                min="0"
+                max="10000"
+                value={form.collateralPercentage}
+                onChange={e => setForm({ ...form, collateralPercentage: e.target.value })}
+                className="w-full pr-12 px-4 py-3 bg-slate-900/70 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                required
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500">%</span>
+            </div>
+            <p className="mt-1 text-xs text-slate-500">
+              Collateral required as percentage of loan amount (100 = 1%, 10000 = 100%)
+            </p>
           </div>
 
           {/* Submit Button */}
@@ -322,18 +365,31 @@ export default function LenderDashboard() {
       {/* Active Offers Section */}
       <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8 shadow-2xl">
         <h3 className="text-lg font-semibold text-white mb-4">Your Active Offers</h3>
-        <div className="text-center py-8">
-          <svg className="w-16 h-16 text-slate-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
-          <p className="text-slate-500 text-sm">No active offers yet</p>
-          <p className="text-slate-600 text-xs mt-1">Create your first offer to start lending</p>
-        </div>
+
+        {offers.length === 0 ? (
+          <div className="text-center py-8 text-slate-500">
+            <p>No active offers yet</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {offers.map(offer => (
+              <div
+                key={offer.id}
+                className="bg-slate-900/60 p-4 rounded-xl border border-slate-700 flex justify-between items-center"
+              >
+                <div>
+                  <p className="text-sm text-slate-300">
+                    Offer #{offer.id} — Interest {Number(offer.interestRate) / 100}% APR
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    Max Loan: {offer.maxLoanAmount?.toString()} — Min Score: {offer.minCreditScore?.toString()}
+                  </p>
+                </div>
+                <div className="text-xs text-green-400 font-medium">ACTIVE</div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
