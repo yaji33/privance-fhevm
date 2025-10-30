@@ -3,6 +3,8 @@ pragma solidity ^0.8.24;
 
 import { FHE, euint64, ebool, externalEuint64 } from "@fhevm/solidity/lib/FHE.sol";
 import { SepoliaConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
+import "./CollateralManager.sol";
+import "./RepaymentTracker.sol";
 
 /// @title Confidential Lending Marketplace (FHE-integrated)
 /// @notice Privacy-preserving lending marketplace using Zama FHEVM
@@ -25,6 +27,8 @@ contract LendingMarketplace is SepoliaConfig {
         bool isActive;
         bool isFunded;
         address lender;
+        uint256 plainRequestedAmount; 
+        uint256 plainDuration;       
     }
 
     struct LenderOffer {
@@ -34,6 +38,16 @@ contract LendingMarketplace is SepoliaConfig {
         euint64 interestRate;
         uint256 availableFunds;
         bool isActive;
+        uint256 collateralPercentage;
+         uint256 plainInterestRate;   
+        uint256 plainMaxLoanAmount;  
+    }
+
+    address public owner;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner");
+        _;
     }
 
     mapping(address => BorrowerData) private borrowers;
@@ -43,6 +57,16 @@ contract LendingMarketplace is SepoliaConfig {
     
     uint256 public nextLoanId;
     uint256 public nextOfferId;
+
+    CollateralManager public collateralManager;
+    RepaymentTracker public repaymentTracker;
+
+    constructor(address _collateralManager, address _repaymentTracker) {
+        owner = msg.sender; 
+        collateralManager = CollateralManager(_collateralManager);
+        repaymentTracker = RepaymentTracker(_repaymentTracker);
+    }
+
 
     event DataSubmitted(address indexed borrower);
     event CreditScoreComputed(address indexed borrower);
@@ -169,7 +193,9 @@ contract LendingMarketplace is SepoliaConfig {
     /// @notice Create a loan request (borrower)
     function createLoanRequest(
         externalEuint64 amountExternal, bytes calldata amountProof,
-        externalEuint64 durationExternal, bytes calldata durationProof
+        externalEuint64 durationExternal, bytes calldata durationProof,
+        uint256 plainRequestedAmount,  
+        uint256 plainDuration      
     ) external returns (uint256) {
         BorrowerData storage borrower = borrowers[msg.sender];
         require(borrower.hasScore, "Must have credit score first");
@@ -196,7 +222,9 @@ contract LendingMarketplace is SepoliaConfig {
             timestamp: block.timestamp,
             isActive: true,
             isFunded: false,
-            lender: address(0)
+            lender: address(0),
+            plainRequestedAmount: plainRequestedAmount, 
+            plainDuration: plainDuration  
         });
 
         emit LoanRequested(loanId, msg.sender);
@@ -207,10 +235,15 @@ contract LendingMarketplace is SepoliaConfig {
     function createLenderOffer(
         externalEuint64 minScoreExternal, bytes calldata minScoreProof,
         externalEuint64 maxAmountExternal, bytes calldata maxAmountProof,
-        externalEuint64 interestRateExternal, bytes calldata interestProof
+        externalEuint64 interestRateExternal, bytes calldata interestProof,
+        uint256 collateralPercentage ,
+        uint256 plainInterestRate,    
+        uint256 plainMaxLoanAmount    
     ) external payable returns (uint256) {
         require(msg.value > 0, "Must deposit funds");
-        
+        require(collateralPercentage <= 10000, "Collateral percentage too high");
+
+
         euint64 minScore = FHE.fromExternal(minScoreExternal, minScoreProof);
         euint64 maxAmount = FHE.fromExternal(maxAmountExternal, maxAmountProof);
         euint64 interestRate = FHE.fromExternal(interestRateExternal, interestProof);
@@ -230,7 +263,10 @@ contract LendingMarketplace is SepoliaConfig {
             maxLoanAmount: maxAmount,
             interestRate: interestRate,
             availableFunds: msg.value,
-            isActive: true
+            isActive: true,
+            collateralPercentage: collateralPercentage,
+            plainInterestRate: plainInterestRate,       
+            plainMaxLoanAmount: plainMaxLoanAmount    
         });
 
         emit OfferCreated(offerId, msg.sender);
@@ -279,13 +315,34 @@ contract LendingMarketplace is SepoliaConfig {
         require(msg.sender == offer.lender, "Not the lender");
         require(loan.isActive && !loan.isFunded, "Loan not available");
         require(loanOfferMatches[loanId][offerId], "Loan not matched");
+
+        uint256 collateralRequired = (offer.availableFunds * offer.collateralPercentage) / 10000;
+
+        require(
+            collateralManager.getUserCollateral(loan.borrower) >= collateralRequired,
+            "Insufficient collateral"
+        );
         
+        collateralManager.lockCollateral(loan.borrower, collateralRequired, loanId);
+
+        uint256 agreementId = repaymentTracker.createAgreement(
+            loanId,
+            offerId,
+            loan.borrower,
+            msg.sender,
+            loan.plainRequestedAmount,  
+            offer.plainInterestRate,    
+            loan.plainDuration,         
+            collateralRequired
+        );
+
+        // Finally we can transfer to the borrower
+
         loan.isFunded = true;
         loan.lender = msg.sender;
         loan.isActive = false;
         
         payable(loan.borrower).transfer(offer.availableFunds);
-        
         offer.isActive = false;
         
         emit LoanFunded(loanId, msg.sender, loan.borrower);
@@ -337,5 +394,35 @@ contract LendingMarketplace is SepoliaConfig {
             offer.availableFunds,
             offer.isActive
         );
+    }
+     /// @notice Get public metadata for lender's own offer (non-encrypted)
+    function getLenderOfferMetadata(uint256 offerId) external view returns (
+        address lender,
+        uint256 plainInterestRate,
+        uint256 plainMaxLoanAmount,
+        uint256 availableFunds,
+        bool isActive,
+        uint256 collateralPercentage
+    ) {
+        LenderOffer storage offer = lenderOffers[offerId];
+        require(msg.sender == offer.lender, "Not your offer");
+
+        return (
+            offer.lender,
+            offer.plainInterestRate,
+            offer.plainMaxLoanAmount,
+            offer.availableFunds,
+            offer.isActive,
+            offer.collateralPercentage
+        );
+    }
+    /// @notice Update CollateralManager address (owner only)
+    function updateCollateralManager(address _collateralManager) external onlyOwner {
+        collateralManager = CollateralManager(_collateralManager);
+    }
+
+    /// @notice Update RepaymentTracker address (owner only)
+    function updateRepaymentTracker(address _repaymentTracker) external onlyOwner {
+        repaymentTracker = RepaymentTracker(_repaymentTracker);
     }
 }
