@@ -96,7 +96,7 @@ export default function Borrow() {
           </div>
         </div>
       ) : (
-        // 🟩 Connected screen (borrow content)
+        
         <div className="relative z-10 min-h-screen px-6 py-20">
           <div className="max-w-5xl mx-auto">
             <h1 className="text-5xl font-bold text-center mb-4">Borrower</h1>
