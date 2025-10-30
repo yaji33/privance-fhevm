@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { encryptData, getContract } from "../lib/contract";
+import { encryptData, getContract } from "../lib/contract1";
 import { useFhevm } from "@fhevm-sdk";
 import { useAccount } from "wagmi";
 

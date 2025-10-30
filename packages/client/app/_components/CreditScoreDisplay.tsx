@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { getContract } from "../lib/contract";
+import { getContract } from "../lib/contract1";
 import { useFhevm } from "@fhevm-sdk";
 import type { HandleContractPair } from "@zama-fhe/relayer-sdk/bundle";
 import { ethers } from "ethers";
@@ -40,7 +40,7 @@ export default function CreditScoreDisplay() {
     provider: stableProvider,
     chainId: stableChainId.current,
     initialMockChains,
-    enabled: !!stableProvider && !!stableChainId.current && !!address, 
+    enabled: !!stableProvider && !!stableChainId.current && !!address,
   });
 
   const decryptScore = async () => {
@@ -186,7 +186,6 @@ export default function CreditScoreDisplay() {
     <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8 shadow-2xl">
       <h2 className="text-xl font-semibold text-white mb-6">Credit Score Analysis</h2>
 
-
       {!address && (
         <div className="mb-6 p-4 bg-amber-900/30 rounded-xl border border-amber-500/30">
           <div className="flex items-center gap-3">
@@ -202,17 +201,14 @@ export default function CreditScoreDisplay() {
         </div>
       )}
 
-    
       {score ? (
         <div className="space-y-6">
-      
           <div className={`bg-gradient-to-br ${getScoreColor(score)} rounded-2xl p-8 text-center shadow-xl`}>
             <p className="text-white/80 text-sm font-medium mb-2 uppercase tracking-wider">Your Credit Score</p>
             <p className="text-6xl font-bold text-white mb-2">{score}</p>
             <p className={`text-lg font-semibold ${getScoreRating(score).color}`}>{getScoreRating(score).text}</p>
           </div>
 
- 
           <div className="bg-slate-900/70 rounded-xl p-6 border border-slate-700">
             <h3 className="text-sm font-semibold text-slate-300 mb-4 uppercase tracking-wider">Score Range</h3>
             <div className="space-y-3">
@@ -244,7 +240,6 @@ export default function CreditScoreDisplay() {
         </div>
       ) : (
         <div className="text-center space-y-6">
-        
           <div className="flex justify-center mb-6">
             <div className="w-32 h-32 bg-slate-700/50 rounded-full flex items-center justify-center border-4 border-slate-700">
               <svg className="w-16 h-16 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -297,7 +292,6 @@ export default function CreditScoreDisplay() {
             </button>
           </div>
 
-     
           {(loading || decrypting) && loadingStep && (
             <div className="mt-4 p-4 bg-indigo-900/30 rounded-xl border border-indigo-500/30">
               <div className="flex items-center gap-3">
