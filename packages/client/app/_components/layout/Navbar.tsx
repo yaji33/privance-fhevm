@@ -3,7 +3,7 @@ import WalletConnect from "../WalletConnect";
 
 type NavbarProps = {
   activePage: string;
-  setActivePage: (page: "Home" | "Borrow" | "Lender" | "HowItWorks") => void;
+  setActivePage: (page: "Home" | "Borrow" | "Lender" | "Marketplace") => void;
 };
 
 export default function Navbar({ activePage, setActivePage }: NavbarProps) {
@@ -11,7 +11,7 @@ export default function Navbar({ activePage, setActivePage }: NavbarProps) {
     { name: "Home", page: "Home" },
     { name: "Borrow", page: "Borrow" },
     { name: "Lender", page: "Lender" },
-    { name: "How It Works", page: "HowItWorks" },
+    { name: "Marketplace", page: "Marketplace" },
   ];
 
   return (
