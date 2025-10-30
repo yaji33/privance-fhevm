@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { createLoanRequest, getContract } from "../lib/contract1";
-// Import the helper function
+import { createLoanRequest, getBorrowerLoans, getContract } from "../lib/contract1";
 import { useFhevm } from "@fhevm-sdk";
+import { ethers } from "ethers";
 import { useAccount } from "wagmi";
 
 const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as string;
@@ -21,6 +21,8 @@ export default function BorrowerLoanRequest() {
   const [loading, setLoading] = useState(false);
   const [hasScore, setHasScore] = useState(false);
   const { address, chain } = useAccount();
+  const [loanRequests, setLoanRequests] = useState<any[]>([]);
+  const [loadingLoans, setLoadingLoans] = useState(false);
 
   const chainId = chain?.id;
 
@@ -53,6 +55,37 @@ export default function BorrowerLoanRequest() {
     checkScore();
   }, [address]);
 
+  useEffect(() => {
+    if (!address) return;
+    (async () => {
+      setLoadingLoans(true);
+      try {
+        const contract = await getContract();
+        const totalLoans = await contract.nextLoanId();
+        const loans: any[] = [];
+
+        for (let i = 0; i < Number(totalLoans); i++) {
+          const loan = await contract.loanRequests(i);
+          if (loan.borrower.toLowerCase() === address.toLowerCase()) {
+            loans.push({
+              id: i,
+              borrower: loan.borrower,
+              amount: loan.plainRequestedAmount.toString(),
+              duration: loan.plainDuration.toString(),
+              status: loan.isFunded ? "Funded" : loan.isActive ? "Pending" : "Closed",
+            });
+          }
+        }
+
+        setLoanRequests(loans);
+      } catch (err) {
+        console.error("Error fetching borrower loans:", err);
+      } finally {
+        setLoadingLoans(false);
+      }
+    })();
+  }, [address]);
+
   const handleCreateRequest = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -76,10 +109,10 @@ export default function BorrowerLoanRequest() {
       return;
     }
 
-    const amount = BigInt(form.requestedAmount);
+    const amountInWei = ethers.parseEther(form.requestedAmount);
     const duration = BigInt(form.duration);
 
-    if (amount <= 0n) {
+    if (amountInWei <= 0n) {
       alert("Requested amount must be greater than 0");
       return;
     }
@@ -93,11 +126,11 @@ export default function BorrowerLoanRequest() {
 
     try {
       console.log("Creating loan request...");
-      console.log("Amount:", amount.toString());
+      console.log("Amount:", amountInWei.toString());
       console.log("Duration:", duration.toString());
 
       // Use the helper function from your contract interaction file
-      const tx = await createLoanRequest(fhevmInstance, amount, duration, address);
+      const tx = await createLoanRequest(fhevmInstance, amountInWei, duration, address);
 
       console.log("Transaction sent:", tx.hash);
       const receipt = await tx.wait();
@@ -137,7 +170,7 @@ export default function BorrowerLoanRequest() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+  
       <div className="bg-gradient-to-r from-blue-900/50 to-cyan-900/50 backdrop-blur-sm border border-blue-700 rounded-2xl p-6">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
@@ -157,7 +190,7 @@ export default function BorrowerLoanRequest() {
         </div>
       </div>
 
-      {/* Create Loan Request Form */}
+     
       <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8 shadow-2xl">
         <h3 className="text-lg font-semibold text-white mb-6">Create Loan Request</h3>
 
@@ -174,22 +207,23 @@ export default function BorrowerLoanRequest() {
         )}
 
         <form onSubmit={handleCreateRequest} className="space-y-5">
-          {/* Requested Amount */}
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">Requested Loan Amount</label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">$</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">Ξ</span>
               <input
                 type="number"
-                placeholder="5000"
-                min="1"
+                placeholder="0.1"
+                min="0.001"
+                step="0.001"
                 value={form.requestedAmount}
                 onChange={e => setForm({ ...form, requestedAmount: e.target.value })}
                 className="w-full pl-8 pr-4 py-3 bg-slate-900/70 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                 required
               />
             </div>
-            <p className="mt-1 text-xs text-slate-500">Amount you need to borrow</p>
+
+            <p className="mt-1 text-xs text-slate-500">Amount in ETH (min: 0.001 ETH)</p>
           </div>
 
           {/* Duration */}
@@ -208,7 +242,7 @@ export default function BorrowerLoanRequest() {
             <p className="mt-1 text-xs text-slate-500">Repayment period (1-60 months)</p>
           </div>
 
-          {/* Submit Button */}
+         
           <button
             type="submit"
             disabled={loading || !fhevmInstance || !address || !hasScore}
@@ -246,7 +280,7 @@ export default function BorrowerLoanRequest() {
           </button>
         </form>
 
-        {/* Info Box */}
+       
         <div className="mt-6 p-4 bg-slate-900/50 rounded-xl border border-slate-700">
           <div className="flex items-start gap-3">
             <svg className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -272,18 +306,46 @@ export default function BorrowerLoanRequest() {
       {/* Loan Status Section */}
       <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8 shadow-2xl">
         <h3 className="text-lg font-semibold text-white mb-4">Your Loan Requests</h3>
-        <div className="text-center py-8">
-          <svg className="w-16 h-16 text-slate-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-            />
-          </svg>
-          <p className="text-slate-500 text-sm">No active loan requests</p>
-          <p className="text-slate-600 text-xs mt-1">Create a request to get matched with lenders</p>
-        </div>
+        {loadingLoans ? (
+          <div className="text-center py-8 text-slate-400">Loading your loan requests...</div>
+        ) : loanRequests.length === 0 ? (
+          <div className="text-center py-8">
+            <svg
+              className="w-16 h-16 text-slate-600 mx-auto mb-3"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0..." />
+            </svg>
+            <p className="text-slate-500 text-sm">No active loan requests</p>
+            <p className="text-slate-600 text-xs mt-1">Create a request to get matched with lenders</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {loanRequests.map(loan => (
+              <div
+                key={loan.id}
+                className="p-4 bg-slate-900/60 rounded-xl border border-slate-700 hover:border-blue-600 transition"
+              >
+                <h4 className="text-white font-medium mb-2">Loan #{loan.id}</h4>
+                <p className="text-slate-400 text-sm">Amount: ${loan.amount}</p>
+                <p className="text-slate-400 text-sm">Duration: {loan.duration} months</p>
+                <p
+                  className={`text-sm font-medium mt-2 ${
+                    loan.status === "Pending"
+                      ? "text-yellow-400"
+                      : loan.status === "Matched"
+                        ? "text-green-400"
+                        : "text-slate-500"
+                  }`}
+                >
+                  Status: {loan.status}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
