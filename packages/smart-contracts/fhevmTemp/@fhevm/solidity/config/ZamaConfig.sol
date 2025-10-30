@@ -20,8 +20,8 @@ library ZamaConfig {
     function getSepoliaConfig() internal pure returns (CoprocessorConfig memory) {
         return
             CoprocessorConfig({
-                ACLAddress: 0x50157CFfD6bBFA2DECe204a89ec419c23ef5755D,
-                CoprocessorAddress: 0xCD3ab3bd6bcc0c0bf3E27912a92043e817B1cf69,
+                ACLAddress: 0x687820221192C5B662b25367F70076A37bc79b6c,
+                CoprocessorAddress: 0x848B0066793BcC60346Da1F49049357399B8D595,
                 DecryptionOracleAddress: SepoliaZamaOracleAddress,
                 KMSVerifierAddress: 0x1364cBBf2cDF5032C47d8226a6f6FBD2AFCDacAC
             });
