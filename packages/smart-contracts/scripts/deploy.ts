@@ -1,19 +1,19 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  console.log("Deploying ConfidentialCreditScoreMock contract...");
+  console.log("Deploying ConfidentialCreditScore contract...");
 
   // Get the contract factory
-  const ConfidentialCreditScoreMock = await ethers.getContractFactory(
-    "ConfidentialCreditScoreMock"
+  const ConfidentialCreditScore = await ethers.getContractFactory(
+    "ConfidentialCreditScore"
   );
 
   // Deploy the contract
-  const contract = await ConfidentialCreditScoreMock.deploy();
+  const contract = await ConfidentialCreditScore.deploy();
   await contract.waitForDeployment();
 
   const address = await contract.getAddress();
-  console.log("ConfidentialCreditScoreMock deployed to:", address);
+  console.log("ConfidentialCreditScore deployed to:", address);
 
   // Get deployer info
   const [deployer] = await ethers.getSigners();
