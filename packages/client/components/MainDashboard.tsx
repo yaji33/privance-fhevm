@@ -1,21 +1,45 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BorrowerForm from "../app/_components/BorrowerForm";
 import BorrowerLoanRequest from "../app/_components/BorrowerLoanRequest";
+import CollateralManager from "../app/_components/CollateralManager";
 import CreditScoreDisplay from "../app/_components/CreditScoreDisplay";
 import LenderDashboard from "../app/_components/LenderDashboard";
 import MarketplaceMatching from "../app/_components/MarketPlaceMatching";
+import RepaymentTracker from "../app/_components/RepaymentTracker";
 import WalletConnect from "../app/_components/WalletConnect";
+import { getContract } from "../app/lib/contract1";
+import { ethers } from "ethers";
+import { useAccount } from "wagmi";
 
 type ViewMode = "borrower" | "lender" | "marketplace";
 
 export default function MainDashboard() {
   const [viewMode, setViewMode] = useState<ViewMode>("borrower");
+  const [borrowerTab, setBorrowerTab] = useState<"profile" | "collateral" | "loans" | "repayment">("profile");
+  const [lenderTab, setLenderTab] = useState<"offers" | "repayment">("offers");
+  const [repaymentContract, setRepaymentContract] = useState<ethers.Contract | null>(null);
+
+  const { address } = useAccount();
+
+  useEffect(() => {
+    const loadRepaymentContract = async () => {
+      try {
+        const contract = await getContract();
+        setRepaymentContract(contract);
+      } catch (error) {
+        console.error("Failed to load contract:", error);
+      }
+    };
+
+    if (address) {
+      loadRepaymentContract();
+    }
+  }, [address]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Header */}
       <div className="border-b border-slate-700/50 backdrop-blur-sm bg-slate-900/50">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -62,17 +86,15 @@ export default function MainDashboard() {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Wallet Connection - Always visible */}
         <div className="mb-8">
           <WalletConnect />
         </div>
-
         {/* Conditional Content Based on View Mode */}
+
         {viewMode === "borrower" && (
           <div className="space-y-8">
-            {/* Hero Section */}
+       
             <div className="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border border-blue-500/30 rounded-2xl p-8">
               <h2 className="text-2xl font-bold text-white mb-2">Borrower Portal</h2>
               <p className="text-blue-200">
@@ -81,41 +103,111 @@ export default function MainDashboard() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Left Column */}
-              <div className="space-y-8">
-                <BorrowerForm />
+            {/* Borrower Tabs */}
+            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-6">
+              <div className="flex flex-wrap gap-2 mb-6">
+                <button
+                  onClick={() => setBorrowerTab("profile")}
+                  className={`px-4 py-2 rounded-lg font-medium transition ${
+                    borrowerTab === "profile"
+                      ? "bg-blue-600 text-white"
+                      : "text-slate-400 hover:text-white hover:bg-slate-700"
+                  }`}
+                >
+                  📊 Profile & Credit
+                </button>
+                <button
+                  onClick={() => setBorrowerTab("collateral")}
+                  className={`px-4 py-2 rounded-lg font-medium transition ${
+                    borrowerTab === "collateral"
+                      ? "bg-purple-600 text-white"
+                      : "text-slate-400 hover:text-white hover:bg-slate-700"
+                  }`}
+                >
+                  💰 Collateral
+                </button>
+                <button
+                  onClick={() => setBorrowerTab("loans")}
+                  className={`px-4 py-2 rounded-lg font-medium transition ${
+                    borrowerTab === "loans"
+                      ? "bg-emerald-600 text-white"
+                      : "text-slate-400 hover:text-white hover:bg-slate-700"
+                  }`}
+                >
+                  📝 Loan Requests
+                </button>
+                {/* ADD REPAYMENT TAB */}
+                <button
+                  onClick={() => setBorrowerTab("repayment")}
+                  className={`px-4 py-2 rounded-lg font-medium transition ${
+                    borrowerTab === "repayment"
+                      ? "bg-amber-600 text-white"
+                      : "text-slate-400 hover:text-white hover:bg-slate-700"
+                  }`}
+                >
+                  💳 Repayments
+                </button>
               </div>
 
-              {/* Right Column */}
-              <div className="space-y-8">
-                <CreditScoreDisplay />
-              </div>
+              {/* Tab Content */}
+              {borrowerTab === "profile" && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <BorrowerForm />
+                  <CreditScoreDisplay />
+                </div>
+              )}
+
+              {borrowerTab === "collateral" && <CollateralManager />}
+              {borrowerTab === "loans" && <BorrowerLoanRequest />}
+              {borrowerTab === "repayment" && <RepaymentTracker />}
             </div>
-
-            {/* Loan Request Section */}
-            <BorrowerLoanRequest />
           </div>
         )}
-
         {viewMode === "lender" && (
           <div className="space-y-8">
-            {/* Hero Section */}
+         
             <div className="bg-gradient-to-r from-purple-600/20 to-indigo-600/20 border border-purple-500/30 rounded-2xl p-8">
               <h2 className="text-2xl font-bold text-white mb-2">Lender Portal</h2>
               <p className="text-purple-200">
-                Create confidential lending offers and automatically match with qualified borrowers without seeing their
-                sensitive data.
+                Create confidential lending offers and automatically match with qualified borrowers.
               </p>
             </div>
 
-            <LenderDashboard />
+            {/* Lender Tabs */}
+            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-6">
+              <div className="flex flex-wrap gap-2 mb-6">
+                <button
+                  onClick={() => setLenderTab("offers")}
+                  className={`px-4 py-2 rounded-lg font-medium transition ${
+                    lenderTab === "offers"
+                      ? "bg-purple-600 text-white"
+                      : "text-slate-400 hover:text-white hover:bg-slate-700"
+                  }`}
+                >
+                  💰 Create Offers
+                </button>
+                {/* ADD REPAYMENT TAB FOR LENDERS */}
+                <button
+                  onClick={() => setLenderTab("repayment")}
+                  className={`px-4 py-2 rounded-lg font-medium transition ${
+                    lenderTab === "repayment"
+                      ? "bg-amber-600 text-white"
+                      : "text-slate-400 hover:text-white hover:bg-slate-700"
+                  }`}
+                >
+                  💳 Track Repayments
+                </button>
+              </div>
+
+              {/* Tab Content */}
+              {lenderTab === "offers" && <LenderDashboard />}
+              {lenderTab === "repayment" && <RepaymentTracker />}
+            </div>
           </div>
         )}
-
         {viewMode === "marketplace" && (
           <div className="space-y-8">
-            {/* Hero Section */}
+          
             <div className="bg-gradient-to-r from-emerald-600/20 to-teal-600/20 border border-emerald-500/30 rounded-2xl p-8">
               <h2 className="text-2xl font-bold text-white mb-2">Lending Marketplace</h2>
               <p className="text-emerald-200">
@@ -127,7 +219,6 @@ export default function MainDashboard() {
             <MarketplaceMatching />
           </div>
         )}
-
         {/* Footer Info */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-slate-800/30 border border-slate-700 rounded-xl p-6">
@@ -180,7 +271,6 @@ export default function MainDashboard() {
             </p>
           </div>
         </div>
-
         {/* Powered by Zama */}
         <div className="mt-8 text-center">
           <div className="inline-flex items-center gap-2 px-6 py-3 bg-slate-800/50 border border-slate-700 rounded-full">
