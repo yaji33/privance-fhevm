@@ -1,6 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "@fhevm/hardhat-plugin";
+
 import * as dotenv from "dotenv";
 
 dotenv.config();
@@ -20,6 +21,7 @@ const config: HardhatUserConfig = {
         enabled: true,
         runs: 200,
       },
+      viaIR: true, 
     },
   },
   networks: {
