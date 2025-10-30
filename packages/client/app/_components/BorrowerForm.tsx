@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
-import { getContract } from "../lib/contract";
+import React, { useMemo, useState } from "react";
+import { encryptData, getContract } from "../lib/contract";
+import { useFhevm } from "@fhevm-sdk";
+import { useAccount } from "wagmi";
 
 interface FormData {
   income: string;
@@ -16,22 +18,157 @@ export default function BorrowerForm() {
     liabilities: "",
   });
   const [loading, setLoading] = useState(false);
+  const { address, chain } = useAccount();
+
+  const chainId = chain?.id;
+
+  // Create EIP-1193 provider from wagmi for FHEVM
+  const provider = useMemo(() => {
+    if (typeof window === "undefined") return undefined;
+    return (window as any).ethereum;
+  }, []);
+
+  const initialMockChains = { 31337: "http://localhost:8545" };
+
+  const { instance: fhevmInstance } = useFhevm({
+    provider,
+    chainId,
+    initialMockChains,
+    enabled: !!provider && !!chainId && !!address, 
+  });
+
+  const toHexString = (bytes: Uint8Array) =>
+    "0x" +
+    Array.from(bytes)
+      .map(b => b.toString(16).padStart(2, "0"))
+      .join("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!fhevmInstance) {
+      alert("FHEVM instance not initialized. Please wait and try again.");
+      return;
+    }
+
+    if (!address) {
+      alert("Please connect your wallet first.");
+      return;
+    }
+
+    // Validate inputs
+    const income = BigInt(form.income);
+    const repaymentScore = BigInt(form.repaymentScore);
+    const liabilities = BigInt(form.liabilities);
+
+    if (income === 0n) {
+      alert("Income cannot be zero");
+      return;
+    }
+
+    if (repaymentScore > 100n) {
+      alert("Repayment score must be between 0 and 100");
+      return;
+    }
+
     setLoading(true);
+
     try {
+      console.log("=== Starting Submission ===");
+      console.log("Input values:", { income, repaymentScore, liabilities });
+      console.log("User address:", address);
+
+      // Step 1: Encrypt each value using FHEVM
+      console.log("Encrypting income...");
+      const incomeEncrypted = await encryptData(fhevmInstance, income, address);
+
+      console.log("Encrypting repayment score...");
+      const repaymentScoreEncrypted = await encryptData(fhevmInstance, repaymentScore, address);
+
+      console.log("Encrypting liabilities...");
+      const liabilitiesEncrypted = await encryptData(fhevmInstance, liabilities, address);
+
+      console.log("All values encrypted successfully");
+      console.log("Encrypted handles:", {
+        income: incomeEncrypted.handles[0],
+        repaymentScore: repaymentScoreEncrypted.handles[0],
+        liabilities: liabilitiesEncrypted.handles[0],
+      });
+
+      // Step 2: Get contract instance
+      console.log("Getting contract instance...");
       const contract = await getContract();
-      const tx = await contract.submitBorrowerData(
-        BigInt(form.income),
-        BigInt(form.repaymentScore),
-        BigInt(form.liabilities),
-      );
-      await tx.wait();
-      alert("Data submitted successfully!");
-    } catch (err) {
-      console.error(err);
-      alert("Transaction failed. Check console for details.");
+      console.log("Contract loaded");
+
+      // Step 3: Prepare transaction parameters (6 params total)
+      const params = [
+        incomeEncrypted.handles[0], // externalEuint64
+        toHexString(incomeEncrypted.inputProof), // bytes
+        repaymentScoreEncrypted.handles[0], // externalEuint64
+        toHexString(repaymentScoreEncrypted.inputProof), // bytes
+        liabilitiesEncrypted.handles[0], // externalEuint64
+        toHexString(liabilitiesEncrypted.inputProof), // bytes
+      ];
+
+      console.log("Transaction parameters prepared (6 params)");
+
+      // Step 4: Estimate gas to catch errors early
+      console.log("Estimating gas...");
+      try {
+        const gasEstimate = await contract.submitBorrowerData.estimateGas(...params);
+        console.log("Gas estimate:", gasEstimate.toString());
+      } catch (gasError: any) {
+        console.error("Gas estimation failed:", gasError);
+        throw new Error(`Transaction would fail: ${gasError.message}`);
+      }
+
+      // Step 5: Submit transaction with extra gas for FHEVM operations
+      console.log("Submitting transaction...");
+      const tx = await contract.submitBorrowerData(...params, {
+        gasLimit: 5000000, 
+      });
+
+      console.log("Transaction sent:", tx.hash);
+      console.log("Waiting for confirmation...");
+
+      const receipt = await tx.wait();
+      console.log("Transaction confirmed in block:", receipt.blockNumber);
+      console.log("Gas used:", receipt.gasUsed.toString());
+
+      alert("Data submitted successfully! Your information is encrypted on-chain.");
+
+    
+      setForm({
+        income: "",
+        repaymentScore: "",
+        liabilities: "",
+      });
+    } catch (err: any) {
+      console.error("Submission error:", err);
+
+     
+      let errorMessage = "Transaction failed. ";
+
+      if (err.message.includes("user rejected")) {
+        errorMessage = "Transaction was rejected by user.";
+      } else if (err.message.includes("insufficient funds")) {
+        errorMessage = "Insufficient funds for gas fees.";
+      } else if (err.message.includes("nonce")) {
+        errorMessage = "Nonce error. Please try again.";
+      } else if (err.message.includes("execution reverted")) {
+        errorMessage =
+          "Contract execution reverted. Please check:\n" +
+          "1. Contract is properly deployed\n" +
+          "2. FHEVM gateway is running\n" +
+          "3. You're on the correct network\n" +
+          "4. Input values are valid";
+      } else if (err.reason) {
+        errorMessage += `Reason: ${err.reason}`;
+      } else if (err.message) {
+        errorMessage += err.message;
+      }
+
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -41,8 +178,20 @@ export default function BorrowerForm() {
     <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8 shadow-2xl">
       <h2 className="text-xl font-semibold text-white mb-6">Submit Your Information</h2>
 
+      {!address && (
+        <div className="mb-4 p-3 bg-amber-900/30 border border-amber-700/50 rounded-lg">
+          <p className="text-amber-400 text-sm">⚠️ Please connect your wallet to continue</p>
+        </div>
+      )}
+
+      {address && !fhevmInstance && (
+        <div className="mb-4 p-3 bg-blue-900/20 border border-blue-700/50 rounded-lg">
+          <p className="text-blue-400 text-sm">ℹ️ Initializing encryption system...</p>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Income Input */}
+    
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-2">Annual Income</label>
           <div className="relative">
@@ -54,11 +203,13 @@ export default function BorrowerForm() {
               onChange={e => setForm({ ...form, income: e.target.value })}
               className="w-full pl-8 pr-4 py-3 bg-slate-900/70 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
               required
+              min="1"
             />
           </div>
+          <p className="mt-1 text-xs text-slate-500">Must be greater than 0</p>
         </div>
 
-        {/* Repayment Score Input */}
+     
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-2">Repayment Score</label>
           <input
@@ -74,7 +225,7 @@ export default function BorrowerForm() {
           <p className="mt-1 text-xs text-slate-500">Enter a score between 0 and 100</p>
         </div>
 
-        {/* Liabilities Input */}
+  
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-2">Total Liabilities</label>
           <div className="relative">
@@ -86,13 +237,14 @@ export default function BorrowerForm() {
               onChange={e => setForm({ ...form, liabilities: e.target.value })}
               className="w-full pl-8 pr-4 py-3 bg-slate-900/70 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
               required
+              min="0"
             />
           </div>
         </div>
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || !fhevmInstance || !address}
           className="w-full py-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 disabled:from-slate-700 disabled:to-slate-700 rounded-xl text-white font-semibold transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-blue-500/50 disabled:cursor-not-allowed"
         >
           {loading ? (
@@ -113,10 +265,14 @@ export default function BorrowerForm() {
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
               </svg>
-              Submitting...
+              Encrypting & Submitting...
             </span>
+          ) : !address ? (
+            "Connect wallet first"
+          ) : !fhevmInstance ? (
+            "Initializing encryption..."
           ) : (
-            "Submit Data"
+            "Submit Encrypted Data"
           )}
         </button>
       </form>
@@ -130,7 +286,14 @@ export default function BorrowerForm() {
               clipRule="evenodd"
             />
           </svg>
-          <p className="text-sm text-slate-400">Your data is encrypted and processed securely on the blockchain</p>
+          <div className="space-y-1">
+            <p className="text-sm text-slate-400">
+              Your data is fully encrypted using homomorphic encryption before being sent to the blockchain
+            </p>
+            <p className="text-xs text-slate-500">
+              ✓ End-to-end encryption ✓ Privacy-preserving computation ✓ No plaintext exposure
+            </p>
+          </div>
         </div>
       </div>
     </div>
