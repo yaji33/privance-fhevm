@@ -51,7 +51,7 @@ Privance is a privacy-preserving lending protocol that solves a fundamental prob
 - All operations are verifiable on-chain
 - Compliance with data protection regulations (GDPR, PDPA) is built-in
 
-**Live Demo**: [https://privance.vercel.app/home](https://privance.vercel.app/home)  
+**Live Demo**: [https://privance.vercel.app/home](https://privance.vercel.app)  
 **Repository**: [https://github.com/yaji33/privance-fhevm](https://github.com/yaji33/privance-fhevm)
 
 ## The Problem
@@ -722,8 +722,7 @@ MIT License - see [LICENSE](LICENSE) file for details
 ## Contact & Support
 
 - **Issues**: [GitHub Issues](https://github.com/yaji33/privance-fhevm/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yaji33/privance-fhevm/discussions)
-- **Demo**: [https://privance.vercel.app/home](https://privance.vercel.app/home)
+- **Demo**: [https://privance.vercel.app/home](https://privance.vercel.app)
 
 ---
 
