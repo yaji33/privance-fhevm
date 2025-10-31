@@ -2,10 +2,26 @@
   <img src="https://github.com/user-attachments/assets/908f1cfd-7eb7-405c-8abf-264c029db210" alt="Privance Logo" width="400"/>
 </p>
 
-# Privance: Privacy-First DeFi Lending
+<h1 align="center">Privance: Privacy-First DeFi Lending</h1>
 
-[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://privance.vercel.app/home)
-[![License](https://img.shields.io/badge/license-BSD%203--Clause%20Clear-blue.svg)](LICENSE)
+<p align="center">
+  <a href="https://privance.vercel.app/home">
+    <img src="https://img.shields.io/badge/demo-live-success" alt="Live Demo"/>
+  </a>
+  <a href="https://github.com/yaji33/privance-fhevm/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/license-BSD%203--Clause%20Clear-blue.svg" alt="License"/>
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=GtzC5HguknY" target="_blank">
+    <img src="https://img.youtube.com/vi/GtzC5HguknY/hqdefault.jpg" alt="Privance Demo Video" width="640" />
+  </a>
+</p>
+
+
+> 🎥 **Watch the full demo:** [Privance – Privacy-First DeFi Lending (YouTube)](https://www.youtube.com/watch?v=GtzC5HguknY)
+
 
 A decentralized lending marketplace built on Zama's Fully Homomorphic Encryption Virtual Machine (FHEVM), enabling credit scoring and loan matching on encrypted data without ever exposing sensitive financial information.
 
