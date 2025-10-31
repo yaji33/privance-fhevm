@@ -5,7 +5,7 @@
 # Privance: Privacy-First DeFi Lending
 
 [![Live Demo](https://img.shields.io/badge/demo-live-success)](https://privance.vercel.app/home)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-BSD%203--Clause%20Clear-blue.svg)](LICENSE)
 
 A decentralized lending marketplace built on Zama's Fully Homomorphic Encryption Virtual Machine (FHEVM), enabling credit scoring and loan matching on encrypted data without ever exposing sensitive financial information.
 
