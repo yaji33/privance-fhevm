@@ -362,104 +362,195 @@ The contract leverages Zama's TFHE library for encrypted computations:
 **Step 1: Connect Wallet**
 ```typescript
 // Next.js with MetaMask integration
-import { useEffect, useState } from 'react';
-import { ethers } from 'ethers';
+import { getSignerAddress, checkNetwork, switchToSepolia } from '../lib/contract';
 
 const connectWallet = async () => {
-  if (typeof window.ethereum !== 'undefined') {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    await provider.send("eth_requestAccounts", []);
-    const signer = provider.getSigner();
-    return signer;
+  try {
+    // Check if on correct network
+    const isCorrectNetwork = await checkNetwork();
+    
+    if (!isCorrectNetwork) {
+      await switchToSepolia();
+    }
+    
+    // Get signer address
+    const address = await getSignerAddress();
+    console.log('Connected wallet:', address);
+    return address;
+  } catch (error) {
+    console.error('Failed to connect wallet:', error);
   }
 };
 ```
 
 **Step 2: Initialize FHE Instance and Encrypt Financial Data**
 ```typescript
-import { createInstance } from 'fhevmjs';
+import { createInstance } from '@fhevm/sdk';
 
-// Initialize FHE instance
-const instance = await createInstance({ 
-    chainId: 11155111, // Sepolia
+// Initialize FHEVM instance
+const initFhevm = async () => {
+  const instance = await createInstance({
+    chainId: parseInt(process.env.NEXT_PUBLIC_CHAIN_ID as string),
     networkUrl: `https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
     gatewayUrl: 'https://gateway.zama.ai'
-});
-
-// Generate encryption key pair
-const { publicKey, privateKey } = instance.generateKeypair();
-
-// Encrypt financial data client-side
-const encryptedIncome = instance.encrypt64(85000);
-const encryptedLiabilities = instance.encrypt64(15000);
-const encryptedRepaymentScore = instance.encrypt64(95);
-
-// Generate proofs for encrypted values
-const inputProof = await instance.generateProof(publicKey);
+  });
+  
+  return instance;
+};
 ```
 
 **Step 3: Submit Encrypted Data to Contract**
 ```typescript
-import { Contract } from 'ethers';
-import LendingMarketplaceABI from './abis/LendingMarketplace.json';
+import { submitBorrowerData, hasSubmittedData } from '../lib/contract';
+import type { FhevmInstance } from "@fhevm-sdk";
 
-const contract = new Contract(
-    process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-    LendingMarketplaceABI,
-    signer
-);
-
-// Submit encrypted borrower data
-const tx = await contract.submitBorrowerData(
-    encryptedIncome.handles[0],
-    encryptedIncome.inputProof,
-    encryptedRepaymentScore.handles[0],
-    encryptedRepaymentScore.inputProof,
-    encryptedLiabilities.handles[0],
-    encryptedLiabilities.inputProof
-);
-
-await tx.wait();
-console.log('Data submitted successfully!');
+const submitFinancialData = async (
+  fhevmInstance: FhevmInstance,
+  income: number,
+  repaymentScore: number,
+  liabilities: number,
+  signerAddress: string
+) => {
+  try {
+    // Convert to bigint
+    const incomeBigInt = BigInt(income);
+    const repaymentScoreBigInt = BigInt(repaymentScore);
+    const liabilitiesBigInt = BigInt(liabilities);
+    
+    // Submit encrypted data (encryption happens inside the helper)
+    const tx = await submitBorrowerData(
+      fhevmInstance,
+      incomeBigInt,
+      repaymentScoreBigInt,
+      liabilitiesBigInt,
+      signerAddress
+    );
+    
+    await tx.wait();
+    console.log('Financial data submitted successfully!');
+    
+    // Verify submission
+    const dataSubmitted = await hasSubmittedData();
+    console.log('Data submitted:', dataSubmitted);
+  } catch (error) {
+    console.error('Failed to submit data:', error);
+  }
+};
 ```
 
 **Step 4: Compute Credit Score**
 ```typescript
-// Trigger credit score computation (happens on-chain with FHE)
-const tx = await contract.computeCreditScore();
-await tx.wait();
-console.log('Credit score computed!');
+import { computeCreditScore, hasCreditScore, hasSubmittedData } from '../lib/contract';
+
+const calculateCreditScore = async () => {
+  try {
+    // Check if data has been submitted
+    const hasData = await hasSubmittedData();
+    
+    if (!hasData) {
+      throw new Error('Must submit financial data first');
+    }
+    
+    // Compute credit score on-chain (FHE operations happen in smart contract)
+    const tx = await computeCreditScore();
+    await tx.wait();
+    
+    console.log('Credit score computed successfully!');
+    
+    // Verify score exists
+    const hasScore = await hasCreditScore();
+    console.log('Has credit score:', hasScore);
+  } catch (error) {
+    console.error('Failed to compute credit score:', error);
+  }
+};
 ```
 
-**Step 5: Decrypt Your Score Locally**
+**Step 5: Retrieve Encrypted Credit Score**
 ```typescript
-// Retrieve encrypted credit score
-const encryptedScore = await contract.getCreditScore();
+import { getCreditScore, hasCreditScore } from '../lib/contract';
 
-// Decrypt locally (only you can decrypt)
-const decryptedScore = instance.decrypt(encryptedScore, privateKey);
-console.log(`Your credit score: ${decryptedScore}`);
+const getMyScore = async () => {
+  try {
+    const hasScore = await hasCreditScore();
+    
+    if (!hasScore) {
+      throw new Error('No credit score available');
+    }
+    
+    // Returns encrypted euint64 handle
+    const encryptedScore = await getCreditScore();
+    console.log('Encrypted score retrieved:', encryptedScore);
+    
+    // Note: Decryption would require additional setup with FHEVM SDK
+    // The encrypted score can only be decrypted by the borrower
+    return encryptedScore;
+  } catch (error) {
+    console.error('Failed to retrieve score:', error);
+  }
+};
 ```
 
 **Step 6: Create Loan Request**
 ```typescript
-// Encrypt loan parameters
-const encryptedAmount = instance.encrypt64(10000);
-const encryptedDuration = instance.encrypt64(12); // months
+import { createLoanRequest, getBorrowerLoans } from '../lib/contract';
+import type { FhevmInstance } from "@fhevm-sdk";
 
-// Create loan request with both encrypted and plain values
-const tx = await contract.createLoanRequest(
-    encryptedAmount.handles[0],
-    encryptedAmount.inputProof,
-    encryptedDuration.handles[0],
-    encryptedDuration.inputProof,
-    10000, // plainRequestedAmount for display
-    12     // plainDuration for display
-);
+const requestLoan = async (
+  fhevmInstance: FhevmInstance,
+  loanAmount: number,
+  durationMonths: number,
+  signerAddress: string
+) => {
+  try {
+    // Convert to bigint
+    const amount = BigInt(loanAmount);
+    const duration = BigInt(durationMonths);
+    
+    // Create loan request with encrypted and plain values
+    const tx = await createLoanRequest(
+      fhevmInstance,
+      amount,
+      duration,
+      signerAddress
+    );
+    
+    const receipt = await tx.wait();
+    console.log('Loan request created successfully!');
+    
+    // Fetch borrower's loans
+    const loans = await getBorrowerLoans(signerAddress);
+    console.log('Your loans:', loans);
+    
+    return loans;
+  } catch (error) {
+    console.error('Failed to create loan request:', error);
+  }
+};
+```
+**Step 7: Deposit Collateral**
 
-const receipt = await tx.wait();
-const loanId = receipt.events[0].args.loanId;
-console.log(`Loan request created with ID: ${loanId}`);
+```
+import { depositCollateral, getUserCollateral, getAvailableCollateral } from './utils/contractHelpers';
+
+const addCollateral = async (amountEth: string, userAddress: string) => {
+  try {
+    // Deposit collateral
+    const tx = await depositCollateral(amountEth);
+    await tx.wait();
+    
+    console.log(`Deposited ${amountEth} ETH as collateral`);
+    
+    // Check total collateral
+    const totalCollateral = await getUserCollateral(userAddress);
+    const availableCollateral = await getAvailableCollateral(userAddress);
+    
+    console.log('Total collateral:', totalCollateral.toString());
+    console.log('Available collateral:', availableCollateral.toString());
+  } catch (error) {
+    console.error('Failed to deposit collateral:', error);
+  }
+};
 ```
 
 ### For Lenders
