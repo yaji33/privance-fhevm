@@ -265,7 +265,7 @@ export default function Marketplace() {
     const offer = lenderOffers.find(o => o.offerId === offerId);
 
     if (!loan || !offer) {
-      alert("❌ Loan or offer not found");
+      alert(" Loan or offer not found");
       return;
     }
 
@@ -305,7 +305,7 @@ export default function Marketplace() {
       }
 
       console.log("Match checked in block:", receipt.blockNumber);
-      alert("✅ Match check completed! Encrypted criteria evaluated on-chain.");
+      alert(" Match check completed! Encrypted criteria evaluated on-chain.");
 
       // Reload marketplace to show new match
       await loadMarketplaceData();
@@ -333,7 +333,7 @@ export default function Marketplace() {
         errorMessage = err.message;
       }
 
-      alert(`❌ ${errorMessage}`);
+      alert(` ${errorMessage}`);
     } finally {
       setMatching(false);
     }
@@ -348,14 +348,14 @@ export default function Marketplace() {
 
     // Check if current user is the lender
     if (address.toLowerCase() !== lenderAddress.toLowerCase()) {
-      alert("❌ Only the lender can fund this loan");
+      alert(" Only the lender can fund this loan");
       return;
     }
 
     // Find the match
     const match = matchedPairs.find(m => m.loanId === loanId && m.offerId === offerId);
     if (!match) {
-      alert("❌ Match not found");
+      alert(" Match not found");
       return;
     }
 
@@ -386,7 +386,11 @@ export default function Marketplace() {
     try {
       console.log(`Funding loan ${loanId} with offer ${offerId}...`);
 
-      const tx = await fundLoan(loanId, offerId);
+      const amountWei = ethers.parseEther(formatAmount(match.loan.plainRequestedAmount));
+
+      const amountEth = formatAmount(match.loan.plainRequestedAmount);
+
+      const tx = await fundLoan(loanId, offerId, amountEth);
       const receipt = await tx.wait();
 
       // Verify transaction success
@@ -396,7 +400,7 @@ export default function Marketplace() {
 
       txSucceeded = true;
       console.log("Loan funded in block:", receipt.blockNumber);
-      alert("✅ Loan funded successfully! Funds transferred to borrower.");
+      alert(" Loan funded successfully! Funds transferred to borrower.");
 
       // Reload marketplace
       await loadMarketplaceData();
