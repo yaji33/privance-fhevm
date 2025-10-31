@@ -274,7 +274,7 @@ export default function Marketplace() {
     const isLender = address.toLowerCase() === offer.lender.toLowerCase();
 
     if (!isBorrower && !isLender) {
-      alert("❌ Only the borrower or lender can check this match");
+      alert(" Only the borrower or lender can check this match");
       return;
     }
 
@@ -386,11 +386,9 @@ export default function Marketplace() {
     try {
       console.log(`Funding loan ${loanId} with offer ${offerId}...`);
 
-      const amountWei = ethers.parseEther(formatAmount(match.loan.plainRequestedAmount));
+      
 
-      const amountEth = formatAmount(match.loan.plainRequestedAmount);
-
-      const tx = await fundLoan(loanId, offerId, amountEth);
+      const tx = await fundLoan(loanId, offerId);
       const receipt = await tx.wait();
 
       // Verify transaction success
@@ -423,7 +421,7 @@ export default function Marketplace() {
         errorMessage = err.message;
       }
 
-      alert(`❌ ${errorMessage}`);
+      alert(` ${errorMessage}`);
       setError(errorMessage);
     } finally {
       setFunding(false);

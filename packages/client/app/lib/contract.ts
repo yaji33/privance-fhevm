@@ -243,12 +243,9 @@ export const checkLoanMatch = async (loanId: number, offerId: number) => {
   return contract.checkLoanMatch(loanId, offerId, { gasLimit: 5000000 });
 };
 
-export const fundLoan = async (loanId: number, offerId: number, amountEth: string) => {
+export const fundLoan = async (loanId: number, offerId: number) => {
   const contract = await getContract();
-  return contract.fundLoan(loanId, offerId, {
-    value: ethers.parseEther(amountEth),
-    gasLimit: 5000000,
-  });
+  return contract.fundLoan(loanId, offerId, { gasLimit: 5000000 });
 };
 
 export const getLoanRequest = async (loanId: number) => {
