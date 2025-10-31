@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 
 const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as string;
 const COLLATERAL_MANAGER_ADDRESS = process.env.NEXT_PUBLIC_COLLATERAL_MANAGER as string;
-const PUBLIC_REPAYMENT_TRACKER = process.env.NEXT_PUBLIC_REPAYMENT_TRACKER as string;
+//const PUBLIC_REPAYMENT_TRACKER = process.env.NEXT_PUBLIC_REPAYMENT_TRACKER as string;
 const SEPOLIA_CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID as string;
 
 export const getContract = async (): Promise<ethers.Contract> => {
@@ -69,9 +69,9 @@ export const getLenderOffers = async (lenderAddress: string) => {
         offers.push({
           id: i,
           lender: offer.lender,
-          interestRate: offer.plainInterestRate, 
-          maxLoanAmount: offer.plainMaxLoanAmount, 
-          minCreditScore: null, 
+          interestRate: offer.plainInterestRate,
+          maxLoanAmount: offer.plainMaxLoanAmount,
+          minCreditScore: null,
           availableFunds: offer.availableFunds,
           collateralPercentage: offer.collateralPercentage,
           isActive: offer.isActive,
@@ -289,7 +289,6 @@ export const getCollateralManager = async (): Promise<ethers.Contract> => {
   return new ethers.Contract(COLLATERAL_MANAGER_ADDRESS, collateralManagerABI.abi, signer);
 };
 
-
 export const depositCollateral = async (amountEth: string) => {
   const contract = await getCollateralManager();
   return contract.depositCollateral({
@@ -297,7 +296,6 @@ export const depositCollateral = async (amountEth: string) => {
     gasLimit: 500000,
   });
 };
-
 
 export const getUserCollateral = async (userAddress: string) => {
   const contract = await getCollateralManager();
@@ -309,12 +307,10 @@ export const getAvailableCollateral = async (userAddress: string) => {
   return contract.getAvailableCollateral(userAddress);
 };
 
-
 export const getTotalLockedCollateral = async (userAddress: string) => {
   const contract = await getCollateralManager();
   return contract.getTotalLockedCollateral(userAddress);
 };
-
 
 export const withdrawCollateral = async (amountEth: string) => {
   const contract = await getCollateralManager();

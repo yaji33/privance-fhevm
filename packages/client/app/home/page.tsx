@@ -36,7 +36,7 @@ export default function HomePage() {
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">Privacy-First DeFi Lending</h1>
           <p className="text-gray-300 text-lg max-w-2xl mx-auto mb-8">
             Compute your credit score and match with lenders — without revealing your financial data. Powered by Fully
-            Homomorphic Encryption (FHE) on Zama's FHEVM.
+            Homomorphic Encryption (FHE) on Zama&apos;s FHEVM.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -160,7 +160,7 @@ export default function HomePage() {
             {
               num: "2",
               title: "On-Chain Confidential Computation",
-              desc: "Zama's FHEVM smart contract computes a credit score directly on encrypted inputs using homomorphic math.",
+              desc: "Zama&apos;s FHEVM smart contract computes a credit score directly on encrypted inputs using homomorphic math.",
             },
             {
               num: "3",
@@ -213,7 +213,7 @@ export default function HomePage() {
 
       {/* ===== WHY ZAMA FHEVM ===== */}
       <section className="bg-black text-white py-24 px-8 text-center">
-        <h2 className="text-4xl font-semibold mb-10">Why Zama's FHEVM?</h2>
+        <h2 className="text-4xl font-semibold mb-10">Why Zama&apos;s FHEVM?</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
           {[
             {
@@ -244,7 +244,7 @@ export default function HomePage() {
       {/* ===== DEVELOPER INFO ===== */}
       <section className="bg-black text-white py-24 px-8">
         <div className="max-w-5xl mx-auto bg-gradient-to-br from-slate-800/40 to-slate-900/40 border border-slate-700/50 p-12 text-center backdrop-blur-sm">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">Built on Zama's FHEVM</h2>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">Built on Zama&apos;s FHEVM</h2>
           <p className="text-slate-300 text-lg mb-10 max-w-3xl mx-auto leading-relaxed">
             Privance leverages Fully Homomorphic Encryption to enable confidential smart contracts. Deployed on Sepolia
             testnet, we're pioneering privacy-preserving DeFi infrastructure.
@@ -262,7 +262,8 @@ export default function HomePage() {
             <div className="bg-black/30 border border-green-900/30 p-6 ">
               <h3 className="text-xl font-semibold mb-2 text-green-400"> Zama FHEVM</h3>
               <p className="text-slate-400 text-sm">
-                Powered by Zama's FHEVM — enabling computation on encrypted data without ever exposing plaintext values.
+                Powered by Zama&apos;s FHEVM — enabling computation on encrypted data without ever exposing plaintext
+                values.
               </p>
             </div>
           </div>

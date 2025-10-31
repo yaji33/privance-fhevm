@@ -23,7 +23,6 @@ export default function WalletAuthGuard({
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-black overflow-hidden ">
-      
       {!isAuthed && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden ">
           <div
@@ -36,17 +35,14 @@ export default function WalletAuthGuard({
         </div>
       )}
 
-     
       {isAuthed && <div className="absolute inset-0 bg-black"></div>}
 
-      
       <div className="relative z-10 w-full px-6 flex flex-col items-center justify-center text-center">
         {!isAuthed ? (
           <div className="max-w-2xl mx-auto gap-4 flex flex-col pt-24">
             <h1 className="text-5xl font-bold text-white mb-4">{title}</h1>
             <p className="text-gray-300 text-lg mb-10">{description}</p>
 
-          
             <div className="bg-[#0f1f0e]/60 backdrop-blur-2xl border border-[#17C71C]/40   px-10 py-4 max-w-md mx-auto">
               <div className="flex flex-col items-center gap-4">
                 <h2 className="text-white text-2xl font-semibold">Connect Your Wallet</h2>

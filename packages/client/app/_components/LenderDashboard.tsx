@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { createLenderOffer, encryptData, getContract, getLenderOffers } from "../lib/contract";
+import { createLenderOffer, getLenderOffers } from "../lib/contract";
 import { useFhevm } from "@fhevm-sdk";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
@@ -42,12 +42,6 @@ export default function LenderDashboard() {
     enabled: !!provider && !!chainId && !!address,
   });
 
-  const toHexString = (bytes: Uint8Array) =>
-    "0x" +
-    Array.from(bytes)
-      .map(b => b.toString(16).padStart(2, "0"))
-      .join("");
-
   const handleCreateOffer = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -64,7 +58,7 @@ export default function LenderDashboard() {
     const minScore = BigInt(form.minCreditScore);
     const maxAmountInWei = ethers.parseEther(form.maxLoanAmount);
     const interestRate = BigInt(form.interestRate);
-    const fundingAmount = form.fundingAmount;
+    //const fundingAmount = form.fundingAmount;
     const collateralPercentage = BigInt(form.collateralPercentage);
     // Validation
     if (minScore < 300n || minScore > 850n) {

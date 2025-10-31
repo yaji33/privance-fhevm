@@ -114,7 +114,7 @@ export default function Marketplace() {
                   offer,
                 });
               }
-            } catch (error) {
+            } catch {
               // Silently skip if query fails
               console.warn(`Failed to check match for loan ${loan.loanId} and offer ${offer.offerId}`);
             }

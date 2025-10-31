@@ -2,7 +2,6 @@ import "@rainbow-me/rainbowkit/styles.css";
 import Footer from "~~/app/_components/layout/Footer";
 import Navbar from "~~/app/_components/layout/Navbar";
 import { DappWrapperWithProviders } from "~~/components/DappWrapperWithProviders";
-import { ThemeProvider } from "~~/components/ThemeProvider";
 import "~~/styles/globals.css";
 import { getMetadata } from "~~/utils/helper/getMetadata";
 

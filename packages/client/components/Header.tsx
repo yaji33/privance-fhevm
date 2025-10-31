@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useRef } from "react";
-import { RainbowKitCustomConnectButton } from "~~/components/helper";
 import { useOutsideClick } from "~~/hooks/helper";
 
 /**

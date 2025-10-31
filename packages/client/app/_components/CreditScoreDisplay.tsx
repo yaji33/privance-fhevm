@@ -15,9 +15,6 @@ export default function CreditScoreDisplay() {
   const [decrypting, setDecrypting] = useState(false);
   const [loadingStep, setLoadingStep] = useState("");
   const { address, chain } = useAccount();
-  const [isScoreComputed, setIsScoreComputed] = useState(false);
-
-  const chainId = chain?.id;
 
   const stableProvider = useMemo(() => {
     if (typeof window === "undefined") return null;
@@ -73,7 +70,6 @@ export default function CreditScoreDisplay() {
       const startTimestamp = Math.floor(Date.now() / 1000);
       const durationDays = 1;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const eip712Payload: any =
         typeof fhevmInstance.createEIP712 === "function"
           ? fhevmInstance.createEIP712(publicKey, [CONTRACT_ADDRESS], startTimestamp, durationDays)
@@ -151,7 +147,6 @@ export default function CreditScoreDisplay() {
 
       if (receipt.status === 1) {
         console.log("Credit score computed successfully!");
-        setIsScoreComputed(true);
 
         // Add a small delay to ensure the contract state is updated
         setLoadingStep("Preparing to decrypt...");
