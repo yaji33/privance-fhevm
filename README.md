@@ -137,7 +137,7 @@ This property allows Privance to perform complex credit scoring formulas on encr
 
 ## Use Case Diagram
 
-<img width="3418" height="2631" alt="Blank diagram - Page 1 (10)" src="https://github.com/user-attachments/assets/86caf718-99ce-4c62-80a6-a21590ea8bf0" />
+<img width="3418" height="2631" alt="Blank diagram - Page 1 (12)" src="https://github.com/user-attachments/assets/d3566bc6-4399-4b05-97d6-52b3615bfe21" />
 
 
 ## Architecture
