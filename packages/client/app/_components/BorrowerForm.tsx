@@ -303,7 +303,7 @@ export default function BorrowerForm() {
               <button
                 type="submit"
                 disabled={loading || !fhevmInstance || !address}
-                className="w-full py-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 disabled:from-slate-700 disabled:to-slate-700 text-white font-semibold transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-blue-500/50 disabled:cursor-not-allowed"
+                className="w-full py-4 bg-[#98E29D] text-gray-900 disabled:to-slate-700  font-semibold transition-all duration-200 transform   disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
