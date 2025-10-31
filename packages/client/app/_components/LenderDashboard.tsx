@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { createLenderOffer, encryptData, getContract, getLenderOffers } from "../lib/contract1";
+import { createLenderOffer, encryptData, getContract, getLenderOffers } from "../lib/contract";
 import { useFhevm } from "@fhevm-sdk";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
@@ -183,31 +183,27 @@ export default function LenderDashboard() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-900/50 to-indigo-900/50 backdrop-blur-sm border border-purple-700 rounded-2xl p-6">
+      <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 px-8 py-4 shadow-2xl">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-white">Lender Dashboard</h2>
-            <p className="text-sm text-purple-300">Create confidential lending offers</p>
-          </div>
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+
+          <p className="text-lg font-semibold text-white">Lender Dashboard</p>
         </div>
       </div>
 
       {/* Create Offer Form */}
-      <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8 shadow-2xl">
+      <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 p-8 shadow-2xl">
         <h3 className="text-lg font-semibold text-white mb-6">Create New Lending Offer</h3>
 
         {!address && (
-          <div className="mb-4 p-3 bg-amber-900/30 border border-amber-700/50 rounded-lg">
+          <div className="mb-4 p-3 bg-amber-900/30 border border-amber-700/50 ">
             <p className="text-amber-400 text-sm">⚠️ Connect your wallet to create offers</p>
           </div>
         )}
@@ -223,7 +219,7 @@ export default function LenderDashboard() {
               max="850"
               value={form.minCreditScore}
               onChange={e => setForm({ ...form, minCreditScore: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-900/70 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+              className="w-full px-4 py-3 bg-slate-900/70 border border-slate-700  text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
               required
             />
             <p className="mt-1 text-xs text-slate-500">Only match borrowers with scores above this threshold</p>
@@ -243,7 +239,7 @@ export default function LenderDashboard() {
                 step="0.001"
                 value={form.maxLoanAmount}
                 onChange={e => setForm({ ...form, maxLoanAmount: e.target.value })}
-                className="w-full pl-8 pr-4 py-3 bg-slate-900/70 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                className="w-full pl-8 pr-4 py-3 bg-slate-900/70 border border-slate-700  text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
                 required
               />
             </div>
@@ -262,7 +258,7 @@ export default function LenderDashboard() {
                 max="10000"
                 value={form.interestRate}
                 onChange={e => setForm({ ...form, interestRate: e.target.value })}
-                className="w-full pr-12 px-4 py-3 bg-slate-900/70 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                className="w-full pr-12 px-4 py-3 bg-slate-900/70 border border-slate-700  text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
                 required
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500">bps</span>
@@ -278,7 +274,7 @@ export default function LenderDashboard() {
               placeholder="0.1"
               value={form.fundingAmount}
               onChange={e => setForm({ ...form, fundingAmount: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-900/70 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+              className="w-full px-4 py-3 bg-slate-900/70 border border-slate-700  text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
               required
             />
             <p className="mt-1 text-xs text-slate-500">Amount of ETH to deposit for lending</p>
@@ -294,7 +290,7 @@ export default function LenderDashboard() {
                 max="10000"
                 value={form.collateralPercentage}
                 onChange={e => setForm({ ...form, collateralPercentage: e.target.value })}
-                className="w-full pr-12 px-4 py-3 bg-slate-900/70 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                className="w-full pr-12 px-4 py-3 bg-slate-900/70 border border-slate-700  text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
                 required
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500">%</span>
@@ -308,7 +304,7 @@ export default function LenderDashboard() {
           <button
             type="submit"
             disabled={loading || !fhevmInstance || !address}
-            className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 disabled:from-slate-700 disabled:to-slate-700 rounded-xl text-white font-semibold transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-purple-500/50 disabled:cursor-not-allowed"
+            className="w-full py-3 bg-[#98E29D] text-gray-900 disabled:from-slate-700 disabled:to-slate-700 font-medium transition-all duration-200 transform  active:scale-[0.98] shadow-lg  disabled:cursor-not-allowed"
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
@@ -341,8 +337,8 @@ export default function LenderDashboard() {
         </form>
 
         {/* Info Box */}
-        <div className="mt-6 p-4 bg-slate-900/50 rounded-xl border border-slate-700">
-          <div className="flex items-start gap-3">
+        <div className="mt-6 p-4 bg-slate-900/50 border border-slate-700">
+          <div className="flex items-start gap-3 justify-center">
             <svg className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
@@ -363,7 +359,7 @@ export default function LenderDashboard() {
       </div>
 
       {/* Active Offers Section */}
-      <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8 shadow-2xl">
+      <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700  p-8 shadow-2xl">
         <h3 className="text-lg font-semibold text-white mb-4">Your Active Offers</h3>
 
         {offers.length === 0 ? (
@@ -373,11 +369,8 @@ export default function LenderDashboard() {
         ) : (
           <div className="space-y-4">
             {offers.map(offer => (
-              <div
-                key={offer.id}
-                className="bg-slate-900/60 p-4 rounded-xl border border-slate-700 flex justify-between items-center"
-              >
-                <div>
+              <div key={offer.id} className="bg-slate-900/60 p-4  border border-slate-700 flex justify-between">
+                <div className="flex text-left flex-col">
                   <p className="text-sm text-slate-300">
                     Offer #{offer.id} — Interest {Number(offer.interestRate) / 100}% APR
                   </p>

@@ -30,7 +30,6 @@ export default function WalletConnect() {
             <span>Wallet connected successfully</span>
           </div>
 
-       
           <div className="flex justify-center pt-2">
             <ConnectButton.Custom>
               {({ openAccountModal }) => (
@@ -50,7 +49,6 @@ export default function WalletConnect() {
             Connect your wallet to access encrypted credit scoring
           </p>
 
-       
           <ConnectButton.Custom>
             {({ account, chain, openConnectModal, mounted }) => {
               const ready = mounted;
@@ -73,7 +71,7 @@ export default function WalletConnect() {
                         <button
                           onClick={openConnectModal}
                           type="button"
-                          className="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-xl text-white font-semibold transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-indigo-500/50"
+                          className="bg-[#98E29D] text-gray-900 px-5 py-2 rounded-md text-sm font-semibold hover:bg-green-300 transition shadow-sm hover:shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           Connect Wallet
                         </button>

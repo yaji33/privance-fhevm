@@ -1,10 +1,5 @@
-"use client";
+import { redirect } from "next/navigation";
 
-import type { NextPage } from "next";
-import MainDashboard from "~~/components/MainDashboard";
-
-const Home: NextPage = () => {
-  return <MainDashboard />;
-};
-
-export default Home;
+export default function RootPage() {
+  redirect("/home");
+}

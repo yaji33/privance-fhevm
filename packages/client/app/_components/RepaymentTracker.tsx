@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getAgreementDetails, getBorrowerAgreements, getLenderAgreements, makePayment } from "../lib/contract1";
+import { getAgreementDetails, getBorrowerAgreements, getLenderAgreements, makePayment } from "../lib/contract";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
 
@@ -71,11 +71,11 @@ export default function RepaymentTracker() {
             return {
               agreementId: Number(agreementId),
               loanId: Number(agreementId),
-              offerId: Number(agreementId), 
+              offerId: Number(agreementId),
               borrower,
               lender,
               principal: ethers.formatEther(principal),
-              interestRate: ethers.formatUnits(interestRate, 2), 
+              interestRate: ethers.formatUnits(interestRate, 2),
               totalRepaymentAmount: ethers.formatEther(totalRepayment),
               amountRepaid: ethers.formatEther(amountRepaid),
               dueDate: Number(dueDate),
@@ -154,13 +154,13 @@ export default function RepaymentTracker() {
   }, [address]);
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8 shadow-2xl">
+    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700  p-8 shadow-2xl">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-white">Loan Repayments</h3>
         <button
           onClick={loadRepaymentData}
           disabled={refreshing}
-          className="px-3 py-1 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 rounded-lg text-white text-sm transition"
+          className="px-3 py-1 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800  text-white text-sm transition"
         >
           {refreshing ? "Refreshing..." : "Refresh"}
         </button>
@@ -182,15 +182,15 @@ export default function RepaymentTracker() {
       ) : (
         <div className="space-y-4">
           {agreements.map(agreement => (
-            <div key={agreement.agreementId} className="bg-slate-900/50 border border-slate-700 rounded-xl p-6">
+            <div key={agreement.agreementId} className="bg-slate-900/50 border border-slate-700 p-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="space-y-3 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm font-medium text-slate-300">Agreement #{agreement.agreementId}</span>
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(agreement.status)}`}>
+                    <span className={`px-2 py-1  text-xs font-medium ${getStatusColor(agreement.status)}`}>
                       {agreement.status}
                     </span>
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${getRoleBadge(agreement)}`}>
+                    <span className={`px-2 py-1 text-xs font-medium ${getRoleBadge(agreement)}`}>
                       {address?.toLowerCase() === agreement.borrower.toLowerCase() ? "Borrower" : "Lender"}
                     </span>
                   </div>
@@ -242,12 +242,12 @@ export default function RepaymentTracker() {
                           [agreement.agreementId]: e.target.value,
                         }))
                       }
-                      className="flex-1 px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white text-sm focus:border-emerald-500 focus:outline-none"
+                      className="flex-1 px-3 py-2 bg-slate-800 border border-slate-600  text-white text-sm focus:border-emerald-500 focus:outline-none"
                     />
                     <button
                       onClick={() => handleMakePayment(agreement.agreementId)}
                       disabled={loading || !paymentAmounts[agreement.agreementId]}
-                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-600 rounded-lg text-white text-sm font-medium transition whitespace-nowrap"
+                      className="px-4 py-2 bg-[#98E29D] text-gray-900 hover:bg-emerald-700 disabled:bg-slate-600  text-sm font-medium transition whitespace-nowrap"
                     >
                       {loading ? "Paying..." : "Make Payment"}
                     </button>

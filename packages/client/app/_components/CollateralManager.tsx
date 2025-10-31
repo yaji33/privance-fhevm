@@ -7,7 +7,7 @@ import {
   getTotalLockedCollateral,
   getUserCollateral,
   withdrawCollateral,
-} from "../lib/contract1";
+} from "../lib/contract";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
 
@@ -181,37 +181,32 @@ export default function CollateralManager() {
   }, [loadCollateralData]);
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8 shadow-2xl">
-    
+    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 px-8 py-4 shadow-2xl">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-              />
-            </svg>
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-white">Collateral Management</h3>
-            <p className="text-sm text-slate-400">Secure your loans with ETH collateral</p>
-          </div>
+          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            />
+          </svg>
+
+          <p className="text-lg font-semibold text-white">Collateral Management</p>
         </div>
+
         <button
           onClick={loadCollateralData}
           disabled={loading}
-          className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm text-white transition"
+          className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-sm text-white transition"
         >
           Refresh
         </button>
       </div>
 
-   
       {error && (
-        <div className="mb-6 bg-red-900/30 border border-red-500/50 rounded-xl p-4">
+        <div className="mb-6 bg-red-900/30 border border-red-500/50 p-4">
           <div className="flex items-start gap-3">
             <svg className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
               <path
@@ -237,9 +232,8 @@ export default function CollateralManager() {
         </div>
       )}
 
-      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-gradient-to-br from-slate-900/50 to-slate-800/50 border border-slate-700 rounded-xl p-5">
+        <div className="bg-gradient-to-br from-slate-900/50 to-slate-800/50 border border-slate-700 px-4">
           <div className="flex items-center gap-2 mb-2">
             <svg className="w-4 h-4 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
               <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
@@ -254,7 +248,7 @@ export default function CollateralManager() {
           <p className="text-2xl font-bold text-white">{collateralBalance} ETH</p>
         </div>
 
-        <div className="bg-gradient-to-br from-amber-900/20 to-amber-800/20 border border-amber-700/50 rounded-xl p-5">
+        <div className="bg-gradient-to-br from-amber-900/20 to-amber-800/20 border border-amber-700/50  px-4">
           <div className="flex items-center gap-2 mb-2">
             <svg className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
               <path
@@ -269,7 +263,7 @@ export default function CollateralManager() {
           <p className="text-xs text-amber-400/60 mt-1">Securing active loans</p>
         </div>
 
-        <div className="bg-gradient-to-br from-emerald-900/20 to-emerald-800/20 border border-emerald-700/50 rounded-xl p-5">
+        <div className="bg-gradient-to-br from-emerald-900/20 to-emerald-800/20 border border-emerald-700/50  px-4">
           <div className="flex items-center gap-2 mb-2">
             <svg className="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
               <path
@@ -285,9 +279,8 @@ export default function CollateralManager() {
         </div>
       </div>
 
-  
-      <div className="bg-slate-900/30 border border-slate-700 rounded-xl p-6 mb-4">
-        <h4 className="text-sm font-semibold text-white mb-4">💰 Deposit Collateral</h4>
+      <div className="bg-slate-900/30 border border-slate-700  p-4 mb-4">
+        <h4 className="text-sm font-semibold text-white mb-4">Deposit Collateral</h4>
         <div className="flex gap-3">
           <input
             type="number"
@@ -296,13 +289,13 @@ export default function CollateralManager() {
             placeholder="Amount (ETH)"
             value={depositAmount}
             onChange={e => setDepositAmount(e.target.value)}
-            className="flex-1 px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="flex-1 px-4 bg-slate-800 border border-slate-600  text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
             disabled={loading}
           />
           <button
             onClick={handleDeposit}
             disabled={loading || !depositAmount || !address}
-            className="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-600 disabled:cursor-not-allowed rounded-lg text-white font-medium transition whitespace-nowrap"
+            className="px-8 py-2 bg-[#98E29D] text-gray-900  hover:bg-emerald-700 disabled:bg-slate-600 disabled:cursor-not-allowed  font-medium transition whitespace-nowrap"
           >
             {loading ? "Depositing..." : "Deposit"}
           </button>
@@ -312,9 +305,8 @@ export default function CollateralManager() {
         </p>
       </div>
 
-
-      <div className="bg-slate-900/30 border border-slate-700 rounded-xl p-6 mb-4">
-        <h4 className="text-sm font-semibold text-white mb-4">🏦 Withdraw Collateral</h4>
+      <div className="bg-slate-900/30 border border-slate-700  p-4 mb-4">
+        <h4 className="text-sm font-semibold text-white mb-4">Withdraw Collateral</h4>
         <div className="flex gap-3">
           <div className="flex-1 relative">
             <input
@@ -325,12 +317,12 @@ export default function CollateralManager() {
               placeholder="Amount (ETH)"
               value={withdrawAmount}
               onChange={e => setWithdrawAmount(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+              className="w-full px-4 py-2 bg-slate-800 border border-slate-600  text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
               disabled={loading}
             />
             <button
               onClick={setMaxWithdraw}
-              className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs text-white transition"
+              className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 bg-slate-700 hover:bg-slate-600  text-xs text-white transition"
               disabled={loading}
             >
               Max
@@ -339,7 +331,7 @@ export default function CollateralManager() {
           <button
             onClick={handleWithdraw}
             disabled={loading || !withdrawAmount || !address || parseFloat(availableCollateral) === 0}
-            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed rounded-lg text-white font-medium transition whitespace-nowrap"
+            className="px-8 py-2 bg-[#98E29D] text-gray-900  hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed  font-medium transition whitespace-nowrap"
           >
             {loading ? "Withdrawing..." : "Withdraw"}
           </button>
@@ -349,8 +341,7 @@ export default function CollateralManager() {
         </p>
       </div>
 
-
-      <div className="bg-gradient-to-r from-indigo-900/30 to-purple-900/30 border border-indigo-500/30 rounded-xl p-4">
+      <div className="bg-gradient-to-r from-indigo-900/30 to-purple-900/30 border border-indigo-500/30 p-4">
         <div className="flex items-start gap-3">
           <svg className="w-5 h-5 text-indigo-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
             <path

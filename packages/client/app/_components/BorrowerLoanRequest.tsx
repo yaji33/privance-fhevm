@@ -1,12 +1,10 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { createLoanRequest, getBorrowerLoans, getContract } from "../lib/contract1";
+import { createLoanRequest, getContract } from "../lib/contract";
 import { useFhevm } from "@fhevm-sdk";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
-
-const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as string;
 
 interface LoanForm {
   requestedAmount: string;
@@ -14,7 +12,7 @@ interface LoanForm {
 }
 
 export default function BorrowerLoanRequest() {
-  const [form, setForm] = useState<LoanForm>({
+  const [formData, setFormData] = useState<LoanForm>({
     requestedAmount: "",
     duration: "",
   });
@@ -40,7 +38,6 @@ export default function BorrowerLoanRequest() {
     enabled: !!provider && !!chainId && !!address,
   });
 
-  // Check if user has computed credit score
   useEffect(() => {
     const checkScore = async () => {
       if (!address) return;
@@ -70,7 +67,7 @@ export default function BorrowerLoanRequest() {
             loans.push({
               id: i,
               borrower: loan.borrower,
-              amount: loan.plainRequestedAmount.toString(),
+              amount: ethers.formatEther(loan.plainRequestedAmount),
               duration: loan.plainDuration.toString(),
               status: loan.isFunded ? "Funded" : loan.isActive ? "Pending" : "Closed",
             });
@@ -89,16 +86,6 @@ export default function BorrowerLoanRequest() {
   const handleCreateRequest = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("\n=== LOAN REQUEST DEBUG INFO ===");
-    console.log("Contract address:", CONTRACT_ADDRESS);
-    console.log("Connected address:", address);
-    console.log("Chain ID:", chainId);
-    console.log("FHEVM Instance:", fhevmInstance ? "✓ Ready" : "✗ Not ready");
-    console.log("Has Score:", hasScore);
-    console.log("Requested Amount:", form.requestedAmount);
-    console.log("Duration:", form.duration);
-    console.log("================================\n");
-
     if (!fhevmInstance || !address) {
       alert("Please connect your wallet and wait for initialization.");
       return;
@@ -109,8 +96,8 @@ export default function BorrowerLoanRequest() {
       return;
     }
 
-    const amountInWei = ethers.parseEther(form.requestedAmount);
-    const duration = BigInt(form.duration);
+    const amountInWei = ethers.parseEther(formData.requestedAmount);
+    const duration = BigInt(formData.duration);
 
     if (amountInWei <= 0n) {
       alert("Requested amount must be greater than 0");
@@ -125,25 +112,16 @@ export default function BorrowerLoanRequest() {
     setLoading(true);
 
     try {
-      console.log("Creating loan request...");
-      console.log("Amount:", amountInWei.toString());
-      console.log("Duration:", duration.toString());
-
-      // Use the helper function from your contract interaction file
       const tx = await createLoanRequest(fhevmInstance, amountInWei, duration, address);
-
-      console.log("Transaction sent:", tx.hash);
       const receipt = await tx.wait();
 
       if (receipt.status === 0) {
         throw new Error("Transaction was mined but failed");
       }
 
-      console.log("Loan request created in block:", receipt.blockNumber);
-
       alert("Loan request created successfully! Lenders can now match with your request.");
 
-      setForm({
+      setFormData({
         requestedAmount: "",
         duration: "",
       });
@@ -158,8 +136,6 @@ export default function BorrowerLoanRequest() {
         errorMessage += err.reason;
       } else if (err.message) {
         errorMessage += err.message;
-      } else {
-        errorMessage += "Unknown error occurred";
       }
 
       alert(errorMessage);
@@ -170,43 +146,31 @@ export default function BorrowerLoanRequest() {
 
   return (
     <div className="space-y-6">
-  
-      <div className="bg-gradient-to-r from-blue-900/50 to-cyan-900/50 backdrop-blur-sm border border-blue-700 rounded-2xl p-6">
+      <div className=" backdrop-blur-sm border border-slate-700  p-6">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
-              />
-            </svg>
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-white">Loan Request</h2>
-            <p className="text-sm text-blue-300">Request a confidential loan</p>
-          </div>
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+            />
+          </svg>
+
+          <p className="text-lg font-semibold text-white">Loan Request</p>
         </div>
       </div>
 
-     
-      <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8 shadow-2xl">
+      <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 p-8 shadow-2xl">
         <h3 className="text-lg font-semibold text-white mb-6">Create Loan Request</h3>
 
-        {!address && (
-          <div className="mb-4 p-3 bg-amber-900/30 border border-amber-700/50 rounded-lg">
-            <p className="text-amber-400 text-sm">⚠️ Connect your wallet to request a loan</p>
-          </div>
-        )}
-
-        {address && !hasScore && (
-          <div className="mb-4 p-3 bg-red-900/30 border border-red-700/50 rounded-lg">
+        {!hasScore && (
+          <div className="mb-4 p-3 bg-red-900/30 border border-red-700/50 ">
             <p className="text-red-400 text-sm">⚠️ You must compute your credit score before requesting a loan</p>
           </div>
         )}
 
-        <form onSubmit={handleCreateRequest} className="space-y-5">
+        <div className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">Requested Loan Amount</label>
             <div className="relative">
@@ -216,17 +180,15 @@ export default function BorrowerLoanRequest() {
                 placeholder="0.1"
                 min="0.001"
                 step="0.001"
-                value={form.requestedAmount}
-                onChange={e => setForm({ ...form, requestedAmount: e.target.value })}
-                className="w-full pl-8 pr-4 py-3 bg-slate-900/70 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                value={formData.requestedAmount}
+                onChange={e => setFormData({ ...formData, requestedAmount: e.target.value })}
+                className="w-full pl-8 pr-4 py-3 bg-slate-900/70 border border-slate-700  text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
-
             <p className="mt-1 text-xs text-slate-500">Amount in ETH (min: 0.001 ETH)</p>
           </div>
 
-          {/* Duration */}
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">Loan Duration (months)</label>
             <input
@@ -234,54 +196,24 @@ export default function BorrowerLoanRequest() {
               placeholder="12"
               min="1"
               max="60"
-              value={form.duration}
-              onChange={e => setForm({ ...form, duration: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-900/70 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              value={formData.duration}
+              onChange={e => setFormData({ ...formData, duration: e.target.value })}
+              className="w-full px-4 py-3 bg-slate-900/70 border border-slate-700  text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
             <p className="mt-1 text-xs text-slate-500">Repayment period (1-60 months)</p>
           </div>
 
-         
           <button
-            type="submit"
+            onClick={handleCreateRequest}
             disabled={loading || !fhevmInstance || !address || !hasScore}
-            className="w-full py-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 disabled:from-slate-700 disabled:to-slate-700 rounded-xl text-white font-semibold transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-blue-500/50 disabled:cursor-not-allowed"
+            className="w-full py-3 bg-[#98E29D] text-gray-900 disabled:from-slate-700 disabled:to-slate-700  font-semibold transition-all duration-200"
           >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                Creating Request...
-              </span>
-            ) : !address ? (
-              "Connect Wallet"
-            ) : !hasScore ? (
-              "Compute Credit Score First"
-            ) : !fhevmInstance ? (
-              "Initializing..."
-            ) : (
-              "Create Loan Request"
-            )}
+            {loading ? "Creating Request..." : !hasScore ? "Compute Credit Score First" : "Create Loan Request"}
           </button>
-        </form>
+        </div>
 
-       
-        <div className="mt-6 p-4 bg-slate-900/50 rounded-xl border border-slate-700">
+        <div className="mt-6 p-4 bg-slate-900/50  border border-slate-700 flex justify-center items-center">
           <div className="flex items-start gap-3">
             <svg className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
               <path
@@ -292,19 +224,15 @@ export default function BorrowerLoanRequest() {
             </svg>
             <div className="space-y-1">
               <p className="text-sm text-slate-400">
-                Your loan details are encrypted. Lenders will only see if they match your profile, not the exact
-                amounts.
+                Your loan details are encrypted. Lenders will only see if they match your profile.
               </p>
-              <p className="text-xs text-slate-500">
-                ✓ Privacy-preserving matching ✓ Automated qualification ✓ Secure funding
-              </p>
+              <p className="text-xs text-slate-500">✓ Privacy-preserving matching ✓ Automated qualification</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Loan Status Section */}
-      <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8 shadow-2xl">
+      <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700  p-8 shadow-2xl">
         <h3 className="text-lg font-semibold text-white mb-4">Your Loan Requests</h3>
         {loadingLoans ? (
           <div className="text-center py-8 text-slate-400">Loading your loan requests...</div>
@@ -316,26 +244,31 @@ export default function BorrowerLoanRequest() {
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0..." />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              />
             </svg>
             <p className="text-slate-500 text-sm">No active loan requests</p>
             <p className="text-slate-600 text-xs mt-1">Create a request to get matched with lenders</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {loanRequests.map(loan => (
               <div
                 key={loan.id}
-                className="p-4 bg-slate-900/60 rounded-xl border border-slate-700 hover:border-blue-600 transition"
+                className="p-4 bg-slate-900/60 border border-slate-700 hover:border-blue-600 transition"
               >
                 <h4 className="text-white font-medium mb-2">Loan #{loan.id}</h4>
-                <p className="text-slate-400 text-sm">Amount: ${loan.amount}</p>
+                <p className="text-slate-400 text-sm">Amount: {loan.amount} ETH</p>
                 <p className="text-slate-400 text-sm">Duration: {loan.duration} months</p>
                 <p
                   className={`text-sm font-medium mt-2 ${
                     loan.status === "Pending"
                       ? "text-yellow-400"
-                      : loan.status === "Matched"
+                      : loan.status === "Funded"
                         ? "text-green-400"
                         : "text-slate-500"
                   }`}

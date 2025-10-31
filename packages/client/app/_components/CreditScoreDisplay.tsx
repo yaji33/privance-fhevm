@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { getContract } from "../lib/contract1";
+import { getContract } from "../lib/contract";
 import { useFhevm } from "@fhevm-sdk";
 import type { HandleContractPair } from "@zama-fhe/relayer-sdk/bundle";
 import { ethers } from "ethers";
@@ -183,11 +183,11 @@ export default function CreditScoreDisplay() {
   };
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8 shadow-2xl">
+    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700  p-8 shadow-2xl">
       <h2 className="text-xl font-semibold text-white mb-6">Credit Score Analysis</h2>
 
       {!address && (
-        <div className="mb-6 p-4 bg-amber-900/30 rounded-xl border border-amber-500/30">
+        <div className="mb-6 p-4 bg-amber-900/30  border border-amber-500/30">
           <div className="flex items-center gap-3">
             <svg className="w-5 h-5 text-amber-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
               <path
@@ -203,13 +203,13 @@ export default function CreditScoreDisplay() {
 
       {score ? (
         <div className="space-y-6">
-          <div className={`bg-gradient-to-br ${getScoreColor(score)} rounded-2xl p-8 text-center shadow-xl`}>
+          <div className={`bg-gradient-to-br ${getScoreColor(score)}  p-8 text-center shadow-xl`}>
             <p className="text-white/80 text-sm font-medium mb-2 uppercase tracking-wider">Your Credit Score</p>
             <p className="text-6xl font-bold text-white mb-2">{score}</p>
             <p className={`text-lg font-semibold ${getScoreRating(score).color}`}>{getScoreRating(score).text}</p>
           </div>
 
-          <div className="bg-slate-900/70 rounded-xl p-6 border border-slate-700">
+          <div className="bg-slate-900/70 p-6 border border-slate-700">
             <h3 className="text-sm font-semibold text-slate-300 mb-4 uppercase tracking-wider">Score Range</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -232,7 +232,7 @@ export default function CreditScoreDisplay() {
             <button
               onClick={computeScore}
               disabled={loading}
-              className="px-6 py-3 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 rounded-xl text-white font-medium transition-all duration-200 border border-slate-600"
+              className="px-6 py-3 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800  text-white font-medium transition-all duration-200 border border-slate-600"
             >
               {loading ? "Recomputing..." : "Recompute Score"}
             </button>
@@ -241,7 +241,7 @@ export default function CreditScoreDisplay() {
       ) : (
         <div className="text-center space-y-6">
           <div className="flex justify-center mb-6">
-            <div className="w-32 h-32 bg-slate-700/50 rounded-full flex items-center justify-center border-4 border-slate-700">
+            <div className="w-32 h-32 bg-slate-700/50  flex items-center justify-center border-4 border-slate-700">
               <svg className="w-16 h-16 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
@@ -262,7 +262,7 @@ export default function CreditScoreDisplay() {
             <button
               onClick={computeScore}
               disabled={loading || decrypting || !address || !fhevmInstance}
-              className="w-full py-4 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 disabled:from-slate-700 disabled:to-slate-700 rounded-xl text-white font-semibold transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-emerald-500/50"
+              className="w-full py-3 bg-[#98E29D] text-gray-900 font-medium "
             >
               {loading || decrypting ? (
                 <span className="flex items-center justify-center gap-2">
@@ -293,7 +293,7 @@ export default function CreditScoreDisplay() {
           </div>
 
           {(loading || decrypting) && loadingStep && (
-            <div className="mt-4 p-4 bg-indigo-900/30 rounded-xl border border-indigo-500/30">
+            <div className="mt-4 p-4 bg-indigo-900/30 border border-indigo-500/30">
               <div className="flex items-center gap-3">
                 <svg className="animate-spin h-5 w-5 text-indigo-400" viewBox="0 0 24 24">
                   <circle
@@ -316,15 +316,8 @@ export default function CreditScoreDisplay() {
             </div>
           )}
 
-          <div className="mt-6 p-4 bg-slate-900/50 rounded-xl border border-slate-700">
+          <div className="mt-6 bg-slate-900/50  border border-slate-700 flex justify-center">
             <div className="flex items-start gap-3">
-              <svg className="w-5 h-5 text-indigo-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                  clipRule="evenodd"
-                />
-              </svg>
               <p className="text-sm text-slate-400">
                 Your score remains encrypted on-chain. Only you can decrypt and view it.
               </p>
