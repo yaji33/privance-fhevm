@@ -11,7 +11,7 @@ export default function HomePage() {
   };
 
   const handleScrollDown = () => {
-    scrollToSection("coreFeatures");
+    scrollToSection("footer");
     setShowDownArrow(false);
   };
 
@@ -292,7 +292,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== CTA ===== */}
-      <section className="bg-gradient-to-b from-[#0f1f0e] to-black text-center py-24 text-white">
+      <section className="bg-gradient-to-b from-[#0f1f0e] to-black text-center py-24 text-white" id="footer">
         <h2 className="text-4xl font-bold mb-6">Experience Encrypted Finance</h2>
         <p className="text-slate-400 mb-10 max-w-2xl mx-auto">
           Privance is live on Sepolia. Compute your confidential credit score and join the future of privacy-preserving
@@ -304,6 +304,23 @@ export default function HomePage() {
         >
           Try the MVP
         </button>
+        {!showDownArrow && (
+          <button
+            onClick={handleScrollUp}
+            className="fixed bottom-8 rounded-full right-8 flex items-center justify-center w-14 h-14 border-2 border-green-400 hover:border-green-300 transition shadow-[0_0_20px_#17C71C] hover:shadow-[0_0_30px_#17C71C] bg-black/50 backdrop-blur-md z-50"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-6 h-6 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+            </svg>
+          </button>
+        )}
       </section>
     </div>
   );
