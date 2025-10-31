@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/671f5250-9a03-4a3d-b1cb-8dbf342264eb" alt="Privance Logo" width="400" height="200">
+  <img src="https://github.com/user-attachments/assets/908f1cfd-7eb7-405c-8abf-264c029db210" alt="Privance Logo" width="400"/>
 </p>
 
 # Privance: Privacy-First DeFi Lending
