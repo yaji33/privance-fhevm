@@ -386,8 +386,6 @@ export default function Marketplace() {
     try {
       console.log(`Funding loan ${loanId} with offer ${offerId}...`);
 
-      
-
       const tx = await fundLoan(loanId, offerId);
       const receipt = await tx.wait();
 
@@ -460,26 +458,32 @@ export default function Marketplace() {
       description="Browse, match, and fund confidential loans"
       requireConnection={true}
     >
-      <div className="w-full min-h-screen p-8">
-        <div className="max-w-4xl mx-auto ">
-          <div className=" bg-slate-800/50 border   shadow-xl  border-white/10 w-full mt-24 p-4 space-y-4">
-            {/* Error Banner */}
+      <div className="w-full min-h-screen flex justify-center items-center py-8 sm:py-12 md:py-16 lg:py-20">
+        <div className="w-full max-w-5xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+          <div className="bg-slate-800/50 border shadow-xl border-white/10  w-full mt-16 sm:mt-20 md:mt-24 p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4 md:space-y-6">
             {error && (
-              <div className="bg-red-900/30 border border-red-500/50  p-4">
-                <div className="flex items-start gap-3">
-                  <svg className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <div className="bg-red-900/30 border border-red-500/50 p-3 sm:p-4">
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <svg
+                    className="w-4 h-4 sm:w-5 sm:h-5 text-red-400 flex-shrink-0 mt-0.5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
                     <path
                       fillRule="evenodd"
                       d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
                       clipRule="evenodd"
                     />
                   </svg>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-red-200">Error</p>
-                    <p className="text-xs text-red-300/80 mt-1">{error}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs sm:text-sm font-medium text-red-200">Error</p>
+                    <p className="text-[10px] sm:text-xs text-red-300/80 mt-0.5 sm:mt-1 break-words">{error}</p>
                   </div>
-                  <button onClick={() => setError(null)} className="text-red-400 hover:text-red-300 transition">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <button
+                    onClick={() => setError(null)}
+                    className="text-red-400 hover:text-red-300 transition flex-shrink-0"
+                  >
+                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
                         d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -491,106 +495,134 @@ export default function Marketplace() {
               </div>
             )}
 
-            {/* Privacy Notice */}
-            <div className="bg-blue-700/50 border  border-slate-700  p-4">
-              <div className="flex items-start gap-3">
-                <div>
-                  <p className="text-sm font-medium text-indigo-200"> Privacy-Preserving Matching</p>
-                  <p className="text-xs text-indigo-300/80 mt-1">
-                    Credit scores, income, and liabilities remain encrypted using FHEVM. Lenders never see sensitive
-                    borrower data. Matching happens through encrypted comparisons on-chain.
+            <div className="bg-blue-900/30 border border-blue-500/30  p-2.5 sm:p-3 md:p-4">
+              <div className="flex items-start gap-2">
+                <svg
+                  className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 flex-shrink-0 mt-0.5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs sm:text-sm font-medium text-indigo-200">Privacy-Preserving Matching</p>
+                  <p className="text-[10px] sm:text-xs text-indigo-300/80 mt-0.5 sm:mt-1">
+                    Credit scores, income, and liabilities remain encrypted using FHEVM. Matching happens through
+                    encrypted comparisons on-chain.
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Matched Loans Ready for Funding */}
             {matchedPairs.length > 0 && (
-              <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700  p-6 shadow-2xl">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-white"> Matched Loans (Ready for Funding)</h3>
-                  <span className="px-3 py-1 bg-green-600/20 border border-green-500/30  text-green-400 text-xs font-medium">
+              <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700  p-3 sm:p-4 md:p-6 shadow-xl">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 sm:mb-4 md:mb-6">
+                  <h3 className="text-sm sm:text-base md:text-lg font-semibold text-white">
+                    Matched Loans (Ready for Funding)
+                  </h3>
+                  <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-green-600/20 border border-green-500/30  text-green-400 text-[10px] sm:text-xs font-medium w-fit">
                     {matchedPairs.length} Ready
                   </span>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-2.5 sm:space-y-3 md:space-y-4">
                   {matchedPairs.map(match => (
                     <div
                       key={`${match.loanId}-${match.offerId}`}
-                      className="bg-slate-900/50 border border-green-600/30  p-6 hover:border-green-500/50 transition"
+                      className="bg-slate-900/50 border border-green-600/30  p-2.5 sm:p-3 md:p-4 hover:border-green-500/50 transition"
                     >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 space-y-4">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-slate-300">
-                              Loan #{match.loanId} + Offer #{match.offerId}
-                            </span>
-                            <span className="px-2 py-1 bg-green-600/20 border border-green-500/30  text-xs text-green-400">
-                              ✓ Matched
-                            </span>
-                          </div>
+                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                        <span className="text-[11px] sm:text-xs md:text-sm font-medium text-slate-300">
+                          Loan #{match.loanId} + Offer #{match.offerId}
+                        </span>
+                        <span className="px-1.5 sm:px-2 py-0.5 bg-green-600/20 border border-green-500/30  text-[10px] sm:text-xs text-green-400">
+                          ✓ Matched
+                        </span>
+                      </div>
 
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div>
-                              <p className="text-xs text-slate-500 mb-1">Borrower</p>
-                              <p className="text-sm text-white font-mono">{formatAddress(match.loan.borrower)}</p>
-                            </div>
-                            <div>
-                              <p className="text-xs text-slate-500 mb-1">Requested Amount</p>
-                              <p className="text-sm text-white font-semibold">
-                                {formatAmount(match.loan.plainRequestedAmount)} ETH
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-xs text-slate-500 mb-1">Duration</p>
-                              <p className="text-sm text-white">{match.loan.plainDuration} days</p>
-                            </div>
-                            <div>
-                              <p className="text-xs text-slate-500 mb-1">Interest Rate</p>
-                              <p className="text-sm text-white">{Number(match.offer.plainInterestRate) / 100}%</p>
-                            </div>
+                      <div className="space-y-2 sm:space-y-2.5 md:space-y-3 mb-2.5 sm:mb-3">
+                        <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                          <div className="min-w-0">
+                            <p className="text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">Borrower</p>
+                            <p className="text-[11px] sm:text-xs md:text-sm text-white font-mono truncate">
+                              {formatAddress(match.loan.borrower)}
+                            </p>
                           </div>
-
-                          <div className="flex items-center gap-6 text-xs text-slate-400">
-                            <span>Lender: {formatAddress(match.offer.lender)}</span>
-                            <span>Available: {match.offer.availableFunds} ETH</span>
-                            <span>Collateral Required: {Number(match.offer.collateralPercentage) / 100}%</span>
+                          <div className="min-w-0">
+                            <p className="text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">Amount</p>
+                            <p className="text-[11px] sm:text-xs md:text-sm text-white font-semibold truncate">
+                              {formatAmount(match.loan.plainRequestedAmount)} ETH
+                            </p>
                           </div>
                         </div>
 
-                        <div className="flex flex-col gap-2">
-                          <button
-                            onClick={() => handleFundLoan(match.loanId, match.offerId, match.offer.lender)}
-                            disabled={funding || address?.toLowerCase() !== match.offer.lender.toLowerCase()}
-                            className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-slate-600 disabled:cursor-not-allowed  text-white text-sm font-medium transition whitespace-nowrap"
-                          >
-                            {funding ? "Funding..." : "Fund Loan"}
-                          </button>
-                          {address?.toLowerCase() !== match.offer.lender.toLowerCase() && (
-                            <p className="text-xs text-slate-500">Only lender can fund</p>
-                          )}
+                        <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                          <div>
+                            <p className="text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">Duration</p>
+                            <p className="text-[11px] sm:text-xs md:text-sm text-white">
+                              {match.loan.plainDuration} days
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">Interest Rate</p>
+                            <p className="text-[11px] sm:text-xs md:text-sm text-white">
+                              {Number(match.offer.plainInterestRate) / 100}%
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="pt-2 border-t border-slate-800 space-y-1">
+                          <div className="flex justify-between text-[10px] sm:text-xs text-slate-400">
+                            <span>Lender:</span>
+                            <span className="font-mono truncate ml-2">{formatAddress(match.offer.lender)}</span>
+                          </div>
+                          <div className="flex justify-between text-[10px] sm:text-xs text-slate-400">
+                            <span>Available:</span>
+                            <span>{match.offer.availableFunds} ETH</span>
+                          </div>
+                          <div className="flex justify-between text-[10px] sm:text-xs text-slate-400">
+                            <span>Collateral:</span>
+                            <span>{Number(match.offer.collateralPercentage) / 100}%</span>
+                          </div>
                         </div>
                       </div>
+
+                     
+                      <button
+                        onClick={() => handleFundLoan(match.loanId, match.offerId, match.offer.lender)}
+                        disabled={funding || address?.toLowerCase() !== match.offer.lender.toLowerCase()}
+                        className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-[#98E29D] text-gray-900 hover:bg-green-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-xs sm:text-sm font-medium transition"
+                      >
+                        {funding ? "Funding..." : "Fund Loan"}
+                      </button>
+                      {address?.toLowerCase() !== match.offer.lender.toLowerCase() && (
+                        <p className="text-[10px] sm:text-xs text-slate-500 text-center mt-1.5 sm:mt-2">
+                          Only lender can fund
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Active Loan Requests */}
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700  p-6 shadow-2xl">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-white"> Active Loan Requests</h3>
-                <span className="px-3 py-1 bg-blue-600/20 border border-blue-500/30  text-blue-400 text-xs font-medium">
+            
+            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700  p-3 sm:p-4 md:p-6 shadow-xl">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 sm:mb-4 md:mb-6">
+                <h3 className="text-sm sm:text-base md:text-lg font-semibold text-white">Active Loan Requests</h3>
+                <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-blue-600/20 border border-blue-500/30 text-blue-400 text-[10px] sm:text-xs font-medium w-fit">
                   {activeLoans.length} Active
                 </span>
               </div>
 
               {activeLoans.length === 0 ? (
-                <div className="text-center py-12">
+                <div className="text-center py-8 sm:py-12">
                   <svg
-                    className="w-16 h-16 text-slate-600 mx-auto mb-3"
+                    className="w-12 h-12 sm:w-16 sm:h-16 text-slate-600 mx-auto mb-2 sm:mb-3"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -602,11 +634,13 @@ export default function Marketplace() {
                       d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                     />
                   </svg>
-                  <p className="text-slate-500 text-sm">No active loan requests</p>
-                  <p className="text-slate-600 text-xs mt-1">Check back later or create a request as a borrower</p>
+                  <p className="text-slate-500 text-xs sm:text-sm">No active loan requests</p>
+                  <p className="text-slate-600 text-[10px] sm:text-xs mt-1">
+                    Check back later or create a request as a borrower
+                  </p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-2.5 sm:space-y-3 md:space-y-4">
                   {activeLoans.map(loan => {
                     const existingMatch = matchedPairs.find(m => m.loanId === loan.loanId);
                     const selectedOfferId = selectedMatches[loan.loanId];
@@ -620,57 +654,60 @@ export default function Marketplace() {
                     return (
                       <div
                         key={loan.loanId}
-                        className="bg-slate-900/50 border border-slate-700  p-6 hover:border-blue-600/50 transition"
+                        className="bg-slate-900/50 border border-slate-700  p-2.5 sm:p-3 md:p-4 hover:border-blue-600/50 transition"
                       >
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1 space-y-3">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium text-slate-300">Loan #{loan.loanId}</span>
-                              <span className="px-2 py-1 bg-blue-600/20 border border-blue-500/30  text-xs text-blue-400">
-                                Active
+                        <div className="space-y-2.5 sm:space-y-3">
+                          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                            <span className="text-[11px] sm:text-xs md:text-sm font-medium text-slate-300">
+                              Loan #{loan.loanId}
+                            </span>
+                            <span className="px-1.5 sm:px-2 py-0.5 bg-blue-600/20 border border-blue-500/30  text-[10px] sm:text-xs text-blue-400">
+                              Active
+                            </span>
+                            {existingMatch && (
+                              <span className="px-1.5 sm:px-2 py-0.5 bg-green-600/20 border border-green-500/30  text-[10px] sm:text-xs text-green-400">
+                                Has Match
                               </span>
-                              {existingMatch && (
-                                <span className="px-2 py-1 bg-green-600/20 border border-green-500/30  text-xs text-green-400">
-                                  Has Match
-                                </span>
-                              )}
-                            </div>
+                            )}
+                          </div>
 
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                              <div>
-                                <p className="text-xs text-slate-500 mb-1">Borrower</p>
-                                <p className="text-sm text-white font-mono">{formatAddress(loan.borrower)}</p>
-                              </div>
-                              <div>
-                                <p className="text-xs text-slate-500 mb-1">Amount Requested</p>
-                                <p className="text-sm text-white font-semibold">
-                                  {formatAmount(loan.plainRequestedAmount)} ETH
-                                </p>
-                              </div>
-                              <div>
-                                <p className="text-xs text-slate-500 mb-1">Duration</p>
-                                <p className="text-sm text-white">{loan.plainDuration} days</p>
-                              </div>
-                              <div>
-                                <p className="text-xs text-slate-500 mb-1">Requested On</p>
-                                <p className="text-sm text-white">
-                                  {new Date(loan.timestamp * 1000).toLocaleDateString()}
-                                </p>
-                              </div>
+                          {/* Details Grid */}
+                          <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                            <div className="min-w-0">
+                              <p className="text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">Borrower</p>
+                              <p className="text-[11px] sm:text-xs md:text-sm text-white font-mono truncate">
+                                {formatAddress(loan.borrower)}
+                              </p>
                             </div>
-
-                            <div className="pt-2 border-t border-slate-800">
-                              <p className="text-xs text-slate-500 italic">
-                                Credit score and financial data encrypted via FHEVM
+                            <div className="min-w-0">
+                              <p className="text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">Amount</p>
+                              <p className="text-[11px] sm:text-xs md:text-sm text-white font-semibold truncate">
+                                {formatAmount(loan.plainRequestedAmount)} ETH
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">Duration</p>
+                              <p className="text-[11px] sm:text-xs md:text-sm text-white">{loan.plainDuration} days</p>
+                            </div>
+                            <div>
+                              <p className="text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">Requested On</p>
+                              <p className="text-[11px] sm:text-xs md:text-sm text-white">
+                                {new Date(loan.timestamp * 1000).toLocaleDateString()}
                               </p>
                             </div>
                           </div>
 
-                          <div className="flex flex-col gap-2">
+                          <div className="pt-2 border-t border-slate-800">
+                            <p className="text-[10px] sm:text-xs text-slate-500 italic">
+                              Credit score and financial data encrypted via FHEVM
+                            </p>
+                          </div>
+
+                          <div className="space-y-2">
                             {activeOffers.length > 0 ? (
                               <>
                                 <select
-                                  className="px-3 py-2 bg-slate-800 border border-slate-600  text-white text-sm focus:border-blue-500 focus:outline-none"
+                                  className="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 bg-slate-800 border border-slate-600  text-white text-[11px] sm:text-xs md:text-sm focus:border-blue-500 focus:outline-none"
                                   value={selectedOfferId ?? -1}
                                   onChange={e => {
                                     const offerId = parseInt(e.target.value);
@@ -703,18 +740,20 @@ export default function Marketplace() {
                                   disabled={
                                     matching || selectedOfferId === undefined || selectedOfferId < 0 || !canMatch
                                   }
-                                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white text-sm font-medium transition"
+                                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed rounded text-white text-xs sm:text-sm font-medium transition"
                                 >
                                   {matching ? "Checking..." : "Check Match"}
                                 </button>
                                 {!canMatch && selectedOfferId !== undefined && selectedOfferId >= 0 && (
-                                  <p className="text-xs text-amber-400 text-center">
+                                  <p className="text-[10px] sm:text-xs text-amber-400 text-center">
                                     Only borrower or lender can match
                                   </p>
                                 )}
                               </>
                             ) : (
-                              <p className="text-xs text-slate-500 text-center">No offers available</p>
+                              <p className="text-[10px] sm:text-xs text-slate-500 text-center py-2">
+                                No offers available
+                              </p>
                             )}
                           </div>
                         </div>
@@ -725,19 +764,18 @@ export default function Marketplace() {
               )}
             </div>
 
-            {/* Active Lender Offers */}
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700  p-6 shadow-2xl">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-white"> Active Lender Offers</h3>
-                <span className="px-3 py-1 bg-purple-600/20 border border-purple-500/30  text-purple-400 text-xs font-medium">
+            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700  p-3 sm:p-4 md:p-6 shadow-xl">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 sm:mb-4 md:mb-6">
+                <h3 className="text-sm sm:text-base md:text-lg font-semibold text-white">Active Lender Offers</h3>
+                <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-purple-600/20 border border-purple-500/30  text-purple-400 text-[10px] sm:text-xs font-medium w-fit">
                   {activeOffers.length} Available
                 </span>
               </div>
 
               {activeOffers.length === 0 ? (
-                <div className="text-center py-12">
+                <div className="text-center py-8 sm:py-12">
                   <svg
-                    className="w-16 h-16 text-slate-600 mx-auto mb-3"
+                    className="w-12 h-12 sm:w-16 sm:h-16 text-slate-600 mx-auto mb-2 sm:mb-3"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -749,61 +787,72 @@ export default function Marketplace() {
                       d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <p className="text-slate-500 text-sm">No active lender offers</p>
-                  <p className="text-slate-600 text-xs mt-1">Create an offer as a lender to start matching</p>
+                  <p className="text-slate-500 text-xs sm:text-sm">No active lender offers</p>
+                  <p className="text-slate-600 text-[10px] sm:text-xs mt-1">
+                    Create an offer as a lender to start matching
+                  </p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-2.5 sm:space-y-3 md:space-y-4">
                   {activeOffers.map(offer => {
                     const matchCount = matchedPairs.filter(m => m.offerId === offer.offerId).length;
 
                     return (
                       <div
                         key={offer.offerId}
-                        className="bg-slate-900/50 border border-slate-700  p-6 hover:border-purple-600/50 transition"
+                        className="bg-slate-900/50 border border-slate-700  p-2.5 sm:p-3 md:p-4 hover:border-purple-600/50 transition"
                       >
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1 space-y-3">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium text-slate-300">Offer #{offer.offerId}</span>
-                              <span className="px-2 py-1 bg-purple-600/20 border border-purple-500/30 text-xs text-purple-400">
-                                Active
+                        <div className="space-y-2.5 sm:space-y-3">
+                          {/* Header */}
+                          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                            <span className="text-[11px] sm:text-xs md:text-sm font-medium text-slate-300">
+                              Offer #{offer.offerId}
+                            </span>
+                            <span className="px-1.5 sm:px-2 py-0.5 bg-purple-600/20 border border-purple-500/30  text-[10px] sm:text-xs text-purple-400">
+                              Active
+                            </span>
+                            {matchCount > 0 && (
+                              <span className="px-1.5 sm:px-2 py-0.5 bg-green-600/20 border border-green-500/30  text-[10px] sm:text-xs text-green-400">
+                                {matchCount} Match{matchCount > 1 ? "es" : ""}
                               </span>
-                              {matchCount > 0 && (
-                                <span className="px-2 py-1 bg-green-600/20 border border-green-500/30 text-xs text-green-400">
-                                  {matchCount} Match{matchCount > 1 ? "es" : ""}
-                                </span>
-                              )}
-                            </div>
+                            )}
+                          </div>
 
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                              <div>
-                                <p className="text-xs text-slate-500 mb-1">Lender</p>
-                                <p className="text-sm text-white font-mono">{formatAddress(offer.lender)}</p>
-                              </div>
-                              <div>
-                                <p className="text-xs text-slate-500 mb-1">Available Funds</p>
-                                <p className="text-sm text-white font-semibold">{offer.availableFunds} ETH</p>
-                              </div>
-                              <div>
-                                <p className="text-xs text-slate-500 mb-1">Max Loan Amount</p>
-                                <p className="text-sm text-white">{formatAmount(offer.plainMaxLoanAmount)} ETH</p>
-                              </div>
-                              <div>
-                                <p className="text-xs text-slate-500 mb-1">Interest Rate</p>
-                                <p className="text-sm text-white">{Number(offer.plainInterestRate) / 100}%</p>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center gap-4 text-xs text-slate-400">
-                              <span>Collateral: {Number(offer.collateralPercentage) / 100}%</span>
-                            </div>
-
-                            <div className="pt-2 border-t border-slate-800">
-                              <p className="text-xs text-slate-500 italic">
-                                🔒 Min credit score threshold encrypted via FHEVM
+                          <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                            <div className="min-w-0">
+                              <p className="text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">Lender</p>
+                              <p className="text-[11px] sm:text-xs md:text-sm text-white font-mono truncate">
+                                {formatAddress(offer.lender)}
                               </p>
                             </div>
+                            <div className="min-w-0">
+                              <p className="text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">Available Funds</p>
+                              <p className="text-[11px] sm:text-xs md:text-sm text-white font-semibold truncate">
+                                {offer.availableFunds} ETH
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">Max Loan Amount</p>
+                              <p className="text-[11px] sm:text-xs md:text-sm text-white">
+                                {formatAmount(offer.plainMaxLoanAmount)} ETH
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">Interest Rate</p>
+                              <p className="text-[11px] sm:text-xs md:text-sm text-white">
+                                {Number(offer.plainInterestRate) / 100}%
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-3 sm:gap-4 text-[10px] sm:text-xs text-slate-400">
+                            <span>Collateral: {Number(offer.collateralPercentage) / 100}%</span>
+                          </div>
+
+                          <div className="pt-2 border-t border-slate-800">
+                            <p className="text-[10px] sm:text-xs text-slate-500 italic">
+                              Min credit score threshold encrypted via FHEVM
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -813,70 +862,56 @@ export default function Marketplace() {
               )}
             </div>
 
-            {/* How It Works */}
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700  p-6 shadow-2xl">
-              <h3 className="text-lg font-semibold text-white mb-4"> How Confidential Matching Works</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-blue-600/50  flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-bold text-sm">1</span>
+            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700  p-3 sm:p-4 md:p-6 shadow-xl">
+              <h3 className="text-sm sm:text-base md:text-lg font-semibold text-white mb-3 sm:mb-4">
+                How Confidential Matching Works
+              </h3>
+              <div className="space-y-3 sm:space-y-4">
+                {[
+                  {
+                    num: "1",
+                    title: "Encrypted Credit Check",
+                    desc: "Borrower's encrypted credit score is compared with lender's encrypted minimum threshold using FHE operations",
+                  },
+                  {
+                    num: "2",
+                    title: "Amount Verification",
+                    desc: "Encrypted loan amount is compared with lender's encrypted max loan amount - all on-chain",
+                  },
+                  {
+                    num: "3",
+                    title: "Match Registration",
+                    desc: "If criteria match, the pair is registered in loanOfferMatches mapping for funding",
+                  },
+                  {
+                    num: "4",
+                    title: "Secure Funding",
+                    desc: "Lender funds the loan, collateral is locked, and repayment tracking begins automatically",
+                  },
+                ].map(step => (
+                  <div key={step.num} className="flex items-start gap-2 sm:gap-3">
+                    <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-blue-600/50  flex items-center justify-center flex-shrink-0">
+                      <span className="text-white font-bold text-[10px] sm:text-xs md:text-sm">{step.num}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs sm:text-sm font-medium text-slate-300 mb-0.5 sm:mb-1">{step.title}</p>
+                      <p className="text-[10px] sm:text-xs text-slate-500">{step.desc}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-300">Encrypted Credit Check</p>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Borrower's encrypted credit score is compared with lender's encrypted minimum threshold using FHE
-                      operations
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-blue-600/50  flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-bold text-sm">2</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-300">Amount Verification</p>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Encrypted loan amount is compared with lender's encrypted max loan amount - all on-chain
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-blue-600/50 flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-bold text-sm">3</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-300">Match Registration</p>
-                    <p className="text-xs text-slate-500 mt-1">
-                      If criteria match, the pair is registered in loanOfferMatches mapping for funding
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-blue-600/50  flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-bold text-sm">4</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-300">Secure Funding</p>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Lender funds the loan, collateral is locked, and repayment tracking begins automatically
-                    </p>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
-            {/* Loading Overlay */}
             {loading && (
-              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-                <div className="bg-slate-800 border border-slate-700 p-8 shadow-2xl">
-                  <div className="flex items-center gap-4">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
-                    <div>
-                      <p className="text-white font-medium">Loading Marketplace...</p>
-                      <p className="text-slate-400 text-sm">Please wait while we fetch the latest data</p>
+              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div className="bg-slate-800 border border-slate-700 p-6 sm:p-8 shadow-2xl max-w-sm w-full">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="animate-spin rounded-full h-7 w-7 sm:h-8 sm:w-8 border-b-2 border-emerald-500 flex-shrink-0"></div>
+                    <div className="min-w-0">
+                      <p className="text-white font-medium text-sm sm:text-base">Loading Marketplace...</p>
+                      <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
+                        Please wait while we fetch the latest data
+                      </p>
                     </div>
                   </div>
                 </div>

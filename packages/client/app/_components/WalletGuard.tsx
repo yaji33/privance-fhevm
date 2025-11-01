@@ -37,7 +37,7 @@ export default function WalletAuthGuard({
 
       {isAuthed && <div className="absolute inset-0 bg-black"></div>}
 
-      <div className="relative z-10 w-full px-6 flex flex-col items-center justify-center text-center">
+      <div className="relative z-10 w-full max-w-7xl sm:max-w-4xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center text-center overflow-x-hidden">
         {!isAuthed ? (
           <div className="max-w-2xl mx-auto gap-4 flex flex-col pt-24">
             <h1 className="text-5xl font-bold text-white mb-4">{title}</h1>

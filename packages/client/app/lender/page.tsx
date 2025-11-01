@@ -14,10 +14,9 @@ export default function Lender() {
       description="Create confidential lending offers and automatically match with qualified borrowers based on encrypted credit scores."
       requireConnection={true}
     >
-      <div className="w-full min-h-screen p-8">
-        <div className="max-w-4xl mx-auto">
+      <div className="w-full min-h-screen sm:px-8 py-16 sm:py-20 flex justify-center">
+        <div className="w-full max-w-4xl">
           <div className=" bg-slate-800/50 border  shadow-xl  border-white/10 w-full mt-24">
-            {/* Tab Navigation */}
             <div className="flex flex-wrap gap-2 p-3 sm:p-4 border-b border-slate-700">
               <button
                 onClick={() => setLenderTab("offers")}
@@ -42,7 +41,6 @@ export default function Lender() {
               </button>
             </div>
 
-            {/* Tab Content */}
             <div className="p-4">
               {lenderTab === "offers" && <LenderDashboard />}
               {lenderTab === "repayment" && <RepaymentTracker />}
