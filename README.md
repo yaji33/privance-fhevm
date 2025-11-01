@@ -2,10 +2,26 @@
   <img src="https://github.com/user-attachments/assets/908f1cfd-7eb7-405c-8abf-264c029db210" alt="Privance Logo" width="400"/>
 </p>
 
-# Privance: Privacy-First DeFi Lending
+<h1 align="center">Privance: Privacy-First DeFi Lending</h1>
 
-[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://privance.vercel.app/home)
-[![License](https://img.shields.io/badge/license-BSD%203--Clause%20Clear-blue.svg)](LICENSE)
+<p align="center">
+  <a href="https://privance.vercel.app/home">
+    <img src="https://img.shields.io/badge/demo-live-success" alt="Live Demo"/>
+  </a>
+  <a href="https://github.com/yaji33/privance-fhevm/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/license-BSD%203--Clause%20Clear-blue.svg" alt="License"/>
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=GtzC5HguknY" target="_blank">
+    <img src="https://img.youtube.com/vi/GtzC5HguknY/hqdefault.jpg" alt="Privance Demo Video" width="640" />
+  </a>
+</p>
+
+
+> 🎥 **Watch the full demo:** [Privance – Privacy-First DeFi Lending (YouTube)](https://www.youtube.com/watch?v=GtzC5HguknY)
+
 
 A decentralized lending marketplace built on Zama's Fully Homomorphic Encryption Virtual Machine (FHEVM), enabling credit scoring and loan matching on encrypted data without ever exposing sensitive financial information.
 
@@ -35,7 +51,7 @@ Privance is a privacy-preserving lending protocol that solves a fundamental prob
 - All operations are verifiable on-chain
 - Compliance with data protection regulations (GDPR, PDPA) is built-in
 
-**Live Demo**: [https://privance.vercel.app/home](https://privance.vercel.app/home)  
+**Live Demo**: [https://privance.vercel.app/home](https://privance.vercel.app)  
 **Repository**: [https://github.com/yaji33/privance-fhevm](https://github.com/yaji33/privance-fhevm)
 
 ## The Problem
@@ -121,7 +137,7 @@ This property allows Privance to perform complex credit scoring formulas on encr
 
 ## Use Case Diagram
 
-<img width="3418" height="2631" alt="Blank diagram - Page 1 (10)" src="https://github.com/user-attachments/assets/86caf718-99ce-4c62-80a6-a21590ea8bf0" />
+<img width="3418" height="2631" alt="Blank diagram - Page 1 (12)" src="https://github.com/user-attachments/assets/d3566bc6-4399-4b05-97d6-52b3615bfe21" />
 
 
 ## Architecture
@@ -706,8 +722,7 @@ MIT License - see [LICENSE](LICENSE) file for details
 ## Contact & Support
 
 - **Issues**: [GitHub Issues](https://github.com/yaji33/privance-fhevm/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yaji33/privance-fhevm/discussions)
-- **Demo**: [https://privance.vercel.app/home](https://privance.vercel.app/home)
+- **Demo**: [https://privance.vercel.app/home](https://privance.vercel.app)
 
 ---
 
