@@ -1,9 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import PrivanceLogo from "../../../public/3.svg";
+import MenuIcon from "../../../public/menu.svg";
+import CloseIcon from "../../../public/x.svg";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 
@@ -64,6 +67,7 @@ function NavbarWalletConnect() {
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -74,9 +78,8 @@ export default function Navbar() {
 
   return (
     <nav className="fixed w-full z-50 text-white backdrop-blur-lg bg-slate-900/40 border-b border-white/10 shadow-lg">
-      <div className="flex items-center justify-between max-w-7xl mx-auto px-8 py-4">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-3">
+      <div className="flex items-center justify-between max-w-7xl mx-auto px-6 py-4">
+        <Link href="/" className="flex items-center gap-3 ">
           <Image
             src={PrivanceLogo}
             alt="Privance Logo"
@@ -87,8 +90,7 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* Navigation Links */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-8 font-medium">
+        <div className="hidden md:flex items-center gap-8 font-medium">
           {navLinks.map(link => {
             const isActive = pathname === link.href;
             return (
@@ -105,8 +107,46 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* Wallet Connect */}
-        <NavbarWalletConnect />
+        <div className="hidden md:flex">
+          <NavbarWalletConnect />
+        </div>
+
+        <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden focus:outline-none">
+          <Image
+            src={menuOpen ? CloseIcon : MenuIcon}
+            alt="menu toggle"
+            width={28}
+            height={28}
+            className="transition-all "
+          />
+        </button>
+      </div>
+
+      <div
+        className={`md:hidden flex flex-col items-center backdrop-blur-md border-t border-white/10 px-6 gap-5 transition-all duration-300 ease-in-out overflow-hidden ${
+          menuOpen
+            ? "opacity-100 max-h-[26rem] py-6" 
+            : "opacity-0 max-h-0 py-0" 
+        }`}
+      >
+        {navLinks.map(link => {
+          const isActive = pathname === link.href;
+          return (
+            <Link
+              key={link.name}
+              href={link.href}
+              onClick={() => setMenuOpen(false)}
+              className={`text-lg font-medium ${isActive ? "text-green-400" : "text-slate-200 hover:text-green-300"}`}
+            >
+              {link.name}
+            </Link>
+          );
+        })}
+
+     
+        <div className="pt-2">
+          <NavbarWalletConnect />
+        </div>
       </div>
     </nav>
   );
