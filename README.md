@@ -154,6 +154,7 @@ This property allows Privance to perform complex credit scoring formulas on encr
 
 ### Frontend
 - **Next.js**: UI framework
+- **TypeScript**: Type-safe scripting and JSX components
 - **TailwindCSS**: Styling framework
 - **MetaMask with RainbowKit**: Wallet integration
 
@@ -711,7 +712,7 @@ We welcome contributions! Here's how you can help:
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details
+BSD License - see [LICENSE](LICENSE) file for details
 
 ## Acknowledgments
 
@@ -722,7 +723,7 @@ MIT License - see [LICENSE](LICENSE) file for details
 ## Contact & Support
 
 - **Issues**: [GitHub Issues](https://github.com/yaji33/privance-fhevm/issues)
-- **Demo**: [https://privance.vercel.app/home](https://privance.vercel.app)
+- **Demo**: [https://privance.vercel.app](https://privance.vercel.app)
 
 ---
 
